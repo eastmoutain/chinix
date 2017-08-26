@@ -24,14 +24,17 @@ $(ELF):$(start_obj)
 %.o:%.s
 	$(V) $(CC) $(CFLAGS) -c $< -o $@ 
 
-.PHONY: clean iso
+.PHONY: clean $(ISO) launch_qemu
 
 clean:
 	$(V) rm $(start_obj) $(ELF) $(ISO)
 
-iso :$(ELF)
+$(ISO) :$(ELF)
 	$(V) mkdir -p isofile/boot/grub
 	$(V) cp grub.cfg isofile/boot/grub
 	$(V) cp $(ELF) isofile/boot
 	$(V) grub-mkrescue -o $(ISO) isofile
 	$(V) rm -rf isofile
+
+launch_qemu: $(ISO) 
+	$(V) qemu-system-x86_64 -cdrom $(ISO)
