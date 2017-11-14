@@ -22,7 +22,15 @@ LDFLAGS += -z max-page-size=4096
 
 CFLAGS := -O2 -g -finline -fno-common -fasynchronous-unwind-tables -gdwarf-2 -fno-pic -fno-stack-protector -mcmodel=kernel -mno-red-zone -MT -MP -MD
 
+<<<<<<< HEAD
+CFLAGS += -Ikernel/include
+
+KERNEL_ASMSRC := kernel/boot/start.s \
+				 kernel/boot/gdt.s \
+
+=======
 KERNEL_ASMSRC := kernel/boot/start.s
+>>>>>>> 74210df2cfe72f826788fc3fddd0ae588b326de3
 KERNEL_ASMOBJ = $(patsubst %.s, %.o, $(KERNEL_ASMSRC))
 
 KERNEL_CSRC :=
