@@ -3,16 +3,22 @@
 .section .rodata
 
 .align 8
+.global gdtr
 .type gdtr, @object
 gdtr:
     .short _gdt_end - _gdt - 1
-    .quad _gdt
+    .quad PHYS(_gdt)
 
 .data
 .align 8
 .type _gdt, @object
-    .int 0
-    .int 0
+_gdt:
+    .short 0x0000
+    .short 0x0000
+    .byte 0x00
+    .byte 0b00000000
+    .byte 0b00000000
+    .byte 0x00
 
 .set kernel_code32_sel, . - _gdt
 _kernel_code32_gde:
@@ -43,7 +49,7 @@ _user_code32_gde:
 
 .set user_data32_sel, . - _gdt
 _user_data32_gde:
-    .shrot 0xffff
+    .short 0xffff
     .short 0x0000
     .byte 0x00
     .byte 0b10010010

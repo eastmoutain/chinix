@@ -1,19 +1,22 @@
-# x86_64-os
+# chinix
 
 ## Description
 
 
 ---
 
+## pre-install
+  install grub2, xorror
+
 ## build
   run "make" to build ELF file.
   
-  run "make iso" to generate ISO file, which can be boot from qemu
+  run "make" to generate ISO file, which can be boot from qemu
 
 ---
 
 ## run
 #### run from qemu
-  qemu-system-x86-64 -cdrom start.iso
+  qemu-system-x86-64 -cdrom chinix.iso
 
-  This command will bring up qemu and boot start.iso, you will see green text "OK" on the screen.
+  This command will bring up qemu and boot chinix.iso, you will see green text "OK" on the screen.

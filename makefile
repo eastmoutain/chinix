@@ -1,5 +1,5 @@
 
-V=1
+
 ifeq ($(V),)
 	V = 
 else
@@ -18,33 +18,26 @@ COMM_COMPILEFLAGS := -fasynchromous-unwind-tables -gdwar-2 -fno-pic
 COMM_COMPILEFLAGS += -fno-stack-protector -mcmodel=kernel -mno-red-zene
 COMM_COMPILEFLAGS += -MT -MP -MD
 
-LDFLAGS += -z max-page-size=4096
+LDFLAGS := -z max-page-size=4096
 
-CFLAGS := -O2 -g -finline -fno-common -fasynchronous-unwind-tables -gdwarf-2 -fno-pic -fno-stack-protector -mcmodel=kernel -mno-red-zone -MT -MP -MD
+CFLAGS += -I./kernel/include/
 
-<<<<<<< HEAD
-CFLAGS += -Ikernel/include
+KERNEL_SRCS :=  kernel/boot/start.S \
+			    kernel/boot/gdt.S \
+				kernel/main.c \
+				kernel/arch.c \
+				kernel/arch/mmu.c \
 
-KERNEL_ASMSRC := kernel/boot/start.s \
-				 kernel/boot/gdt.s \
+MM_SRCS:=
 
-=======
-KERNEL_ASMSRC := kernel/boot/start.s
->>>>>>> 74210df2cfe72f826788fc3fddd0ae588b326de3
-KERNEL_ASMOBJ = $(patsubst %.s, %.o, $(KERNEL_ASMSRC))
+LIB_SRCS :=
 
-KERNEL_CSRC :=
-KERNEL_COBJ = $(patsubst %.c, %.o, $(KERNEL_CSRC))
 
-KERNEL_OBJ = $(KERNEL_ASMOBJ) $(KERNEL_COBJ)
+SRCS := $(KERNEL_SRCS) $(MM_SRCS) $(LIB_SRCS)
 
-MM_CSRC := 
-MM_COBJ = $(patsubst %.c, %.o, $(MM_CSRC))
-
-LIB_CSRC :=
-LIB_COBJ = $(patsubst %.c, %.o, $(LIB_CSRC))
-
-OBJ = $(KERNEL_OBJ) $(MM_OBJ) $(LIB_OBJ)
+OBJS = $(patsubst %.c, %.o, $(SRCS:.S=.o))
+DEPS = $(OBJS:.o=.d)
+#$(info obj is $(OBJS))
 
 ELF := $(BOOTDIR)/x86_os.elf
 ISO := $(BOOTDIR)/x86_os.iso
@@ -58,13 +51,13 @@ $(ISO):$(ELF)
 	$(V) grub-mkrescue -o $(ISO) isofile  2> /dev/null
 	$(V) -rm -rf isofile
 
-$(ELF):$(OBJ)
+$(ELF):$(OBJS)
 	$(V) echo "ld $@"
-	$(V) $(LD) -n -T $(LINKER_LD) $^ -o $@
+	$(V) $(LD) -n $(LDFLAGS) -dT $(LINKER_LD) $^ -o $@
 
-%.o:%.s
-	$(V) echo "as $< -o $@"
-	$(V) $(AS) $< -o $@
+%.o:%.S
+	$(V) echo "cc -c $< -o $@"
+	$(V) $(CC) $(CFLAGS) -c $< -o $@
 
 %.o:%.c
 	$(V) echo "cc -c $< -o $@"
@@ -73,8 +66,8 @@ $(ELF):$(OBJ)
 .PHONY: clean launch_qemu
 
 clean:
-	$(V) rm $(OBJ) $(ELF) $(ISO)
-
+	$(V) rm $(OBJS) $(DEPS) $(ELF) $(ISO)
 
 launch_qemu: $(ISO) 
-	$(V) qemu-system-x86_64 -cdrom $(ISO)
+	$(V) qemu-system-x86_64 -cdrom $(ISO) --enable-kvm
+
