@@ -4,17 +4,19 @@
 
 #define MULTIBOOT_MAGIC 0xe85250d6
 
+// TODO this value should be verified.
+#define MULTIBOOT_BOOTLOADER_MAGIC 0x00000000
+
 #define MSR_EFER 0xc0000080
 #define EFER_LME 0x00000100
 
 .section .text.boot
 .type multiboot_header, @object
 multiboot_header:
-header_start:
     .4byte MULTIBOOT_MAGIC
     .4byte 0x0000
-    .4byte header_end - header_start
-    .4byte -(MULTIBOOT_MAGIC+(header_end - header_start))
+    .4byte header_end - multiboot_header
+    .4byte -(MULTIBOOT_MAGIC+(header_end - multiboot_header))
     
     .2byte 0
     .2byte 0
@@ -29,24 +31,24 @@ header_end:
 _start:
     cmpl $MULTIBOOT_MAGIC, %eax
     jne 0f
-    movl %eax, PHYS(multiboot_info)
+    movl %ebx, PHYS(multiboot_info)
 0:
-    lgdt PHYS(gdtr)
+    lgdt PHYS(gdtr_phys)
+
     movw $KERNEL_DATA32_SELECTOR, %ax
     movw %ax, %ds
     movw %ax, %es
     movw %ax, %fs
-    movw %ax, %ss
     movw %ax, %gs
     movw %ax, %ss
 
     movl $PHYS(_kstack + 4096), %esp
 
     pushl $KERNEL_CODE32_SELECTOR
-    pushl $PHYS(.new_pm)
+    pushl $PHYS(new_pm)
     retf
 
-.new_pm:
+new_pm:
 zero_bss:
     /* zero bss section */
     movl $PHYS(__bss_start), %edi
@@ -97,7 +99,7 @@ setup_paging:
 
     /* the first 1GB */
     movl $PHYS(pte), %esi
-    movl $512, %ecx
+    movl $0x200, %ecx
     xor %eax, %eax
 
 2:
@@ -149,14 +151,14 @@ setup_paging:
 .align 8
 .code64
 long_mode:
-    mov $highaddr, %rax
-    //jmp %rax
+    //mov $highaddr, %rax
+    //jmp *%rax
 
 highaddr:
-    //mov $(_kstack + 4096), %rsp
+    mov $(_kstack + 4096), %rsp
 
     /* reload gdtr, refer to its virt addr */
-    //lgdt gdtr
+    lgdt gdtr
 
     movl $0x2f4b2f4f, 0xb8000
     hlt
