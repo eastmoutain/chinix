@@ -192,10 +192,10 @@ highaddr:
     /* set up the idt */
     call setup_idt
 
+    call main
+
     movl $0x2f4b2f4f, 0xb8000
     hlt
-    /* call the main module */
-    //call lk_main
 
 0:                          /* just sit around waiting for interrupts */
     hlt                     /* interrupts will unhalt the processor */
