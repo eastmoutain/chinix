@@ -1,0 +1,165 @@
+!_TAG_FILE_FORMAT	2	/extended format; --format=1 will not append ;" to lines/
+!_TAG_FILE_SORTED	1	/0=unsorted, 1=sorted, 2=foldcase/
+!_TAG_PROGRAM_AUTHOR	Darren Hiebert	/dhiebert@users.sourceforge.net/
+!_TAG_PROGRAM_NAME	Exuberant Ctags	//
+!_TAG_PROGRAM_URL	http://ctags.sourceforge.net	/official site/
+!_TAG_PROGRAM_VERSION	5.9~svn20110310	//
+ADDR_OFFSET	kernel/include/arch/mmu.h	35;"	d
+AS	mk/toolchain.mk	/^AS ?= as$/;"	m
+BOOTDIR	makefile	/^BOOTDIR = $(TOPDIR)\/kernel\/boot$/;"	m
+BOOT_KSTACK_SIZE	kernel/include/boot/kernel_cfg.h	17;"	d
+CC	mk/toolchain.mk	/^CC ?= gcc$/;"	m
+CFLAGS	mk/toolchain.mk	/^CFLAGS := -Wall -Wextra -O2 -g -finline -fno-common -fasynchronous-unwind-tables$/;"	m
+CODE_64_SELECTOR	kernel/include/boot/descriptor.h	17;"	d
+CODE_SELECTOR	kernel/include/boot/descriptor.h	11;"	d
+COMM_COMPILEFLAGS	makefile	/^COMM_COMPILEFLAGS := -fasynchromous-unwind-tables -gdwar-2 -fno-pic$/;"	m
+COMPILER_H	kernel/include/compiler.h	2;"	d
+DATA_SELECTOR	kernel/include/boot/descriptor.h	12;"	d
+DEPS	makefile	/^DEPS = $(OBJS:.o=.d)$/;"	m
+DESCRIPTOR_H	kernel/include/boot/descriptor.h	2;"	d
+EFER_LME	kernel/boot/start.S	/^#define EFER_LME 0x00000100$/;"	d
+ELF	makefile	/^ELF := $(BOOTDIR)\/$(PROJNAME).elf$/;"	m
+GRUB_CFG	makefile	/^GRUB_CFG := $(TOPDIR)\/tools\/grub.cfg$/;"	m
+ISO	makefile	/^ISO := $(BOOTDIR)\/$(PROJNAME).iso$/;"	m
+KERNEL_ASPACE_BASE	kernel/include/boot/kernel_cfg.h	7;"	d
+KERNEL_ASPACE_SIZE	kernel/include/boot/kernel_cfg.h	8;"	d
+KERNEL_BASE	kernel/include/boot/kernel_cfg.h	5;"	d
+KERNEL_BASE	mk/kernel_cfg.mk	/^KERNEL_BASE ?= 0xffffffff80000000 #512M$/;"	m
+KERNEL_CFG_H	kernel/include/boot/kernel_cfg.h	2;"	d
+KERNEL_LOAD_OFFSET	kernel/include/boot/kernel_cfg.h	6;"	d
+KERNEL_LOAD_OFFSET	mk/kernel_cfg.mk	/^KERNEL_LOAD_OFFSET ?= 0x00200000 #1M$/;"	m
+KERNEL_SPACE_BASE	mk/kernel_cfg.mk	/^KERNEL_SPACE_BASE ?= 0xffffff8000000000UL # -512GB$/;"	m
+KERNEL_SPACE_SIZE	mk/kernel_cfg.mk	/^KERNEL_SPACE_SIZE ?= 0x0000008000000000UL #512G$/;"	m
+KERNEL_SRCS	makefile	/^KERNEL_SRCS :=  kernel\/boot\/start.S \\$/;"	m
+LD	mk/toolchain.mk	/^LD ?= ld$/;"	m
+LDFLAGS	makefile	/^LDFLAGS := -z max-page-size=4096$/;"	m
+LIB_SRCS	makefile	/^LIB_SRCS :=$/;"	m
+LINKER_LD	makefile	/^LINKER_LD := $(TOPDIR)\/kernel\/boot\/linker.ld$/;"	m
+MAP_H	kernel/include/arch/map.h	2;"	d
+MEMBASE	kernel/include/boot/kernel_cfg.h	4;"	d
+MEMBASE	mk/kernel_cfg.mk	/^MEMBASE ?= 0$/;"	m
+MMU_H	kernel/include/arch/mmu.h	2;"	d
+MM_SRCS	makefile	/^MM_SRCS:=$/;"	m
+MSR_EFER	kernel/boot/start.S	/^#define MSR_EFER 0xc0000080$/;"	d
+MULTIBOOT_BOOTLOADER_MAGIC	kernel/boot/start.S	/^#define MULTIBOOT_BOOTLOADER_MAGIC 0x2BADB002$/;"	d
+MULTIBOOT_HEADER_FLAGS	kernel/boot/start.S	/^#define MULTIBOOT_HEADER_FLAGS 0x00010002$/;"	d
+MULTIBOOT_HEADER_MAGIC	kernel/boot/start.S	/^#define MULTIBOOT_HEADER_MAGIC 0x1BADB002$/;"	d
+NO_OF_PT_ENTRIES	kernel/include/arch/mmu.h	37;"	d
+NULL_SELECTOR	kernel/include/boot/descriptor.h	8;"	d
+NUM_INT	kernel/include/boot/kernel_cfg.h	20;"	d
+OBJS	makefile	/^OBJS = $(patsubst %.c, %.o, $(SRCS:.S=.o))$/;"	m
+PAGE_OFFSET_MASK_2MB	kernel/include/arch/mmu.h	26;"	d
+PAGE_OFFSET_MASK_4KB	kernel/include/arch/mmu.h	25;"	d
+PAGE_SHIFT	kernel/include/arch/mmu.h	34;"	d
+PAGE_SIZE	kernel/include/arch/mmu.h	39;"	d
+PDPT_ADDR_OFFSET	kernel/include/arch/mmu.h	36;"	d
+PDP_SHIFT	kernel/include/arch/mmu.h	31;"	d
+PD_SHIFT	kernel/include/arch/mmu.h	32;"	d
+PHYS	kernel/include/boot/kernel_cfg.h	14;"	d
+PHYS_ADDR_DELTA	kernel/include/boot/kernel_cfg.h	13;"	d
+PHYS_LOAD_ADDRESS	kernel/include/boot/kernel_cfg.h	12;"	d
+PML4_SHIFT	kernel/include/arch/mmu.h	30;"	d
+PROJNAME	makefile	/^PROJNAME := chinix$/;"	m
+PT_SHIFT	kernel/include/arch/mmu.h	33;"	d
+SRCS	makefile	/^SRCS := $(KERNEL_SRCS) $(MM_SRCS) $(LIB_SRCS)$/;"	m
+STACK_64_SELECTOR	kernel/include/boot/descriptor.h	18;"	d
+TOPDIR	makefile	/^TOPDIR = $(shell pwd)$/;"	m
+TSS_SELECTOR	kernel/include/boot/descriptor.h	22;"	d
+TYPES_H	kernel/include/sys/types.h	2;"	d
+USER_ASPACE_BASE	kernel/include/boot/kernel_cfg.h	9;"	d
+USER_ASPACE_SIZE	kernel/include/boot/kernel_cfg.h	10;"	d
+USER_CODE_32_SELECTOR	kernel/include/boot/descriptor.h	13;"	d
+USER_CODE_64_SELECTOR	kernel/include/boot/descriptor.h	19;"	d
+USER_DATA_32_SELECTOR	kernel/include/boot/descriptor.h	14;"	d
+USER_DATA_64_SELECTOR	kernel/include/boot/descriptor.h	20;"	d
+USER_SPACE_BASE	mk/kernel_cfg.mk	/^USER_SPACE_BASE   ?= 0x0000000000000000UL $/;"	m
+USER_SPACE_SIZE	mk/kernel_cfg.mk	/^USER_SPACE_SIZE   ?= 0x0000800000000000UL $/;"	m
+V	makefile	/^	V := @$/;"	m
+V	makefile	/^	V = $/;"	m
+X86_2MB_PAGE_FRAME	kernel/include/arch/mmu.h	24;"	d
+X86_DIRTY_ACCESS_MASK	kernel/include/arch/mmu.h	13;"	d
+X86_FLAGS_MASK	kernel/include/arch/mmu.h	22;"	d
+X86_KERNEL_PD_FLAGS	kernel/include/arch/mmu.h	16;"	d
+X86_KERNEL_PD_LP_FLAGS	kernel/include/arch/mmu.h	17;"	d
+X86_MMU_CACHE_DISABLE	kernel/include/arch/mmu.h	14;"	d
+X86_MMU_CLEAR	kernel/include/arch/mmu.h	12;"	d
+X86_MMU_PG_G	kernel/include/arch/mmu.h	11;"	d
+X86_MMU_PG_NX	kernel/include/arch/mmu.h	27;"	d
+X86_MMU_PG_P	kernel/include/arch/mmu.h	6;"	d
+X86_MMU_PG_PS	kernel/include/arch/mmu.h	9;"	d
+X86_MMU_PG_PTE_PAT	kernel/include/arch/mmu.h	10;"	d
+X86_MMU_PG_RW	kernel/include/arch/mmu.h	7;"	d
+X86_MMU_PG_U	kernel/include/arch/mmu.h	8;"	d
+X86_PAGING_LEVELS	kernel/include/arch/mmu.h	29;"	d
+X86_PDPT_ADDR_MASK	kernel/include/arch/mmu.h	19;"	d
+X86_PG_FRAME	kernel/include/arch/mmu.h	20;"	d
+X86_PHY_ADDR_MASK	kernel/include/arch/mmu.h	21;"	d
+X86_PTE_NOT_PRESENT	kernel/include/arch/mmu.h	23;"	d
+__ALIGNE	kernel/include/compiler.h	32;"	d
+__ALIGNED	kernel/include/compiler.h	10;"	d
+__BEGIN_CDECLS	kernel/include/compiler.h	41;"	d
+__BEGIN_CDECLS	kernel/include/compiler.h	44;"	d
+__CONST	kernel/include/compiler.h	13;"	d
+__CONST	kernel/include/compiler.h	35;"	d
+__CONSTRUCTOR	kernel/include/compiler.h	23;"	d
+__DESTRUCTOR	kernel/include/compiler.h	24;"	d
+__END_CDECLS	kernel/include/compiler.h	42;"	d
+__END_CDECLS	kernel/include/compiler.h	45;"	d
+__GET_CALLER	kernel/include/compiler.h	18;"	d
+__GET_FRAME	kernel/include/compiler.h	19;"	d
+__GNU_INLINE	kernel/include/compiler.h	17;"	d
+__ISCONSTANT	kernel/include/compiler.h	21;"	d
+__MALLOC	kernel/include/compiler.h	15;"	d
+__NAKED	kernel/include/compiler.h	20;"	d
+__NO_INLINE	kernel/include/compiler.h	22;"	d
+__NO_RETURN	kernel/include/compiler.h	14;"	d
+__NO_RETURN	kernel/include/compiler.h	36;"	d
+__OPTIMIZE	kernel/include/compiler.h	25;"	d
+__PACKED	kernel/include/compiler.h	31;"	d
+__PACKED	kernel/include/compiler.h	9;"	d
+__PURE	kernel/include/compiler.h	12;"	d
+__PURE	kernel/include/compiler.h	34;"	d
+__SECTION	kernel/include/compiler.h	11;"	d
+__SECTION	kernel/include/compiler.h	33;"	d
+__UNUSED	kernel/include/compiler.h	30;"	d
+__UNUSED	kernel/include/compiler.h	8;"	d
+__WEAK	kernel/include/compiler.h	16;"	d
+_code_32_gde	kernel/boot/gdt.S	/^_code_32_gde:$/;"	l
+_code_64_gde	kernel/boot/gdt.S	/^_code_64_gde:$/;"	l
+_common	kernel/boot/idt.S	/^_common:$/;"	l
+_data_64_gde	kernel/boot/gdt.S	/^_data_64_gde:$/;"	l
+_data_gde	kernel/boot/gdt.S	/^_data_gde:$/;"	l
+_gdt	kernel/boot/gdt.S	/^_gdt:$/;"	l
+_gdt_end	kernel/boot/gdt.S	/^_gdt_end:$/;"	l
+_gdtr	kernel/boot/gdt.S	/^_gdtr:$/;"	l
+_gdtr_phys	kernel/boot/gdt.S	/^_gdtr_phys:$/;"	l
+_idt	kernel/boot/idt.S	/^_idt:$/;"	l
+_idt_end	kernel/boot/idt.S	/^_idt_end:$/;"	l
+_idtr	kernel/boot/idt.S	/^_idtr:$/;"	l
+_isr	kernel/boot/idt.S	/^_isr:$/;"	l
+_kstack	kernel/arch.c	/^unsigned char _kstack[BOOT_KSTACK_SIZE] __attribute__((aligned(8)));$/;"	v
+_start	kernel/boot/start.S	/^_start:$/;"	l
+_tss_gde	kernel/boot/gdt.S	/^_tss_gde:$/;"	l
+_user_code_32_gde	kernel/boot/gdt.S	/^_user_code_32_gde:$/;"	l
+_user_code_64_gde	kernel/boot/gdt.S	/^_user_code_64_gde:$/;"	l
+_user_data_32_gde	kernel/boot/gdt.S	/^_user_data_32_gde:$/;"	l
+_user_data_64_gde	kernel/boot/gdt.S	/^_user_data_64_gde:$/;"	l
+bss_setup	kernel/boot/start.S	/^bss_setup:$/;"	l
+buf	kernel/main.c	/^char buf[1024] = "123456";$/;"	v
+farjump64	kernel/boot/start.S	/^farjump64:$/;"	l
+highaddr	kernel/boot/start.S	/^highaddr:$/;"	l
+l1	kernel/boot/idt.S	/^l1:$/;"	l
+likely	kernel/include/compiler.h	28;"	d
+likely	kernel/include/compiler.h	6;"	d
+main	kernel/main.c	/^int main()$/;"	f
+multiboot_header	kernel/boot/start.S	/^multiboot_header:$/;"	l
+multiboot_info	kernel/arch.c	/^void *multiboot_info __attribute__((section(".data"))) ;$/;"	v
+paddr_t	kernel/include/arch/map.h	/^typedef uint64_t paddr_t;$/;"	t
+paging_setup	kernel/boot/start.S	/^paging_setup:$/;"	l
+phys2virt	kernel/include/arch/mmu.h	42;"	d
+real_start	kernel/boot/start.S	/^real_start:$/;"	l
+setup_idt	kernel/boot/idt.S	/^setup_idt:$/;"	l
+unlikely	kernel/include/compiler.h	29;"	d
+unlikely	kernel/include/compiler.h	7;"	d
+vaddr_t	kernel/include/arch/map.h	/^typedef uint64_t vaddr_t;$/;"	t
+virt2phys	kernel/include/arch/mmu.h	41;"	d

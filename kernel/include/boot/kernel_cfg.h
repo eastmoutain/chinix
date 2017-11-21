@@ -13,5 +13,11 @@
 #define PHYS_ADDR_DELTA (KERNEL_BASE + KERNEL_LOAD_OFFSET - PHYS_LOAD_ADDRESS)
 #define PHYS(x) ((x) - PHYS_ADDR_DELTA)
 
+
+#define BOOT_KSTACK_SIZE 0x1000  // 4K
+
+
+#define NUM_INT 0x31
+
 #endif // KERNEL_CFG_H
 

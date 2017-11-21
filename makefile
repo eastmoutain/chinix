@@ -6,10 +6,13 @@ else
 	V := @
 endif
 
+PROJNAME := chinix
+
 include mk/toolchain.mk
 
 TOPDIR = $(shell pwd)
 BOOTDIR = $(TOPDIR)/kernel/boot
+
 
 LINKER_LD := $(TOPDIR)/kernel/boot/linker.ld
 GRUB_CFG := $(TOPDIR)/tools/grub.cfg
@@ -24,8 +27,9 @@ CFLAGS += -I./kernel/include/
 
 KERNEL_SRCS :=  kernel/boot/start.S \
 			    kernel/boot/gdt.S \
+				kernel/boot/idt.S \
 				kernel/main.c \
-				kernel/arch.c \
+				kernel//arch/arch.c \
 				kernel/arch/mmu.c \
 
 MM_SRCS:=
@@ -39,8 +43,8 @@ OBJS = $(patsubst %.c, %.o, $(SRCS:.S=.o))
 DEPS = $(OBJS:.o=.d)
 #$(info obj is $(OBJS))
 
-ELF := $(BOOTDIR)/x86_os.elf
-ISO := $(BOOTDIR)/x86_os.iso
+ELF := $(BOOTDIR)/$(PROJNAME).elf
+ISO := $(BOOTDIR)/$(PROJNAME).iso
 
 all: $(ELF) $(ISO)
 

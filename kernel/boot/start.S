@@ -59,7 +59,7 @@ real_start:
     movw %ax, %ss
 
     /* load initial stack pointer */
-    movl $PHYS(_kstack + 4096), %esp
+    movl $PHYS(_kstack + BOOT_KSTACK_SIZE), %esp
 
     /* We need to jump to our sane 32 bit CS */
     pushl $CODE_SELECTOR
@@ -188,12 +188,12 @@ highaddr:
     /* reload the gdtr */
     lgdt _gdtr
 
-    movl $0x2f4b2f4f, 0xb8000
-    hlt
 
     /* set up the idt */
-    //call setup_idt
+    call setup_idt
 
+    movl $0x2f4b2f4f, 0xb8000
+    hlt
     /* call the main module */
     //call lk_main
 
