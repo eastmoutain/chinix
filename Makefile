@@ -1,5 +1,4 @@
-
-
+V=1
 ifeq ($(V),)
 	V = 
 else
@@ -11,26 +10,31 @@ PROJNAME := chinix
 include mk/toolchain.mk
 
 TOPDIR = $(shell pwd)
-BOOTDIR = $(TOPDIR)/kernel/boot
+BOOTDIR = $(TOPDIR)/boot
 
 
-LINKER_LD := $(TOPDIR)/kernel/boot/linker.ld
+LINKER_LD := $(TOPDIR)/boot/linker.ld
 GRUB_CFG := $(TOPDIR)/tools/grub.cfg
 
-COMM_COMPILEFLAGS := -fasynchromous-unwind-tables -gdwar-2 -fno-pic
-COMM_COMPILEFLAGS += -fno-stack-protector -mcmodel=kernel -mno-red-zene
-COMM_COMPILEFLAGS += -MT -MP -MD
+CFLAGS := -Wall -Wextra -O2 -g -finline -fno-common -fasynchronous-unwind-tables \
+          -gdwarf-2 -fno-pic -fno-stack-protector -mcmodel=kernel \
+		  -mno-red-zone -MT -MP -MD -nostdlib \
+          
+CFLAGS += -I./include/
 
 LDFLAGS := -z max-page-size=4096
 
-CFLAGS += -I./kernel/include/
+KERNEL_BOOT_SRC := boot/start.S \
+                   boot/gdt.S \
+	               boot/idt.S \
 
-KERNEL_SRCS :=  kernel/boot/start.S \
-			    kernel/boot/gdt.S \
-				kernel/boot/idt.S \
-				kernel/main.c \
-				kernel//arch/arch.c \
-				kernel/arch/mmu.c \
+KERNEL_ARCH_SRC := arch/arch.c \
+                   arch/mmu.c \
+			       arch/string.c\
+
+KERNEL_INIT_SRC := init/main.c \
+
+KERNEL_SRCS := $(KERNEL_BOOT_SRC) $(KERNEL_ARCH_SRC) $(KERNEL_INIT_SRC)
 
 MM_SRCS:=
 
@@ -53,7 +57,7 @@ $(ISO):$(ELF)
 	$(V) cp $(GRUB_CFG) isofile/boot/grub
 	$(V) cp $(ELF) isofile/boot
 	$(V) grub-mkrescue -o $(ISO) isofile  2> /dev/null
-	$(V) -rm -rf isofile
+	$(V) rm -rf isofile
 
 $(ELF):$(OBJS)
 	$(V) echo "ld $@"
