@@ -1,7 +1,7 @@
 #ifndef MMU_H
 #define MMU_H
 
-#include <boot/kernel_cfg.h>
+#include <arch/kernel_cfg.h>
 
 #define X86_MMU_PG_P            0x001 // P valid
 #define X86_MMU_PG_RW           0x002 // R/W

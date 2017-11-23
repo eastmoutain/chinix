@@ -9,7 +9,7 @@ __BEGIN_CDECLS
 /**
  * exception frame on stack
  */
-struct 86_64_eframe {
+struct x86_64_eframe {
     // pushed by command "pusha"
     uint64_t rdi, rsi, rbp, rbx, rdx, rcx, rax;
     uint64_t r8, r9, f10, r11, r12, r13, r14, r15;
@@ -23,7 +23,7 @@ struct 86_64_eframe {
     uint64_t user_sp, user_ss;
 };
 
-typedef x86_64_eframe x86_eframe_t;
+typedef struct x86_64_eframe x86_eframe_t;
 
 // read byte from port
 static inline uint8_t inb(uint16_t port)

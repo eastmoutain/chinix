@@ -1,4 +1,4 @@
-#include <boot/kernel_cfg.h>
+#include <arch/kernel_cfg.h>
 
 
 .section .rodata

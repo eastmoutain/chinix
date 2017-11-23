@@ -1,5 +1,5 @@
-#include <boot/kernel_cfg.h>
-#include <boot/descriptor.h>
+#include <arch/kernel_cfg.h>
+#include <arch/descriptor.h>
 
 .text
 

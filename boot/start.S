@@ -1,5 +1,5 @@
-#include <boot/kernel_cfg.h>
-#include <boot/descriptor.h>
+#include <arch/kernel_cfg.h>
+#include <arch/descriptor.h>
 #include <arch/mmu.h>
 
 /* The magic number for the Multiboot header. */
@@ -193,6 +193,7 @@ highaddr:
     call setup_idt
 
     call main
+    hlt
 
     movl $0x2f4b2f4f, 0xb8000
     hlt

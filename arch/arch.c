@@ -1,5 +1,5 @@
 
-#include <boot/kernel_cfg.h>
+#include <arch/kernel_cfg.h>
 
 /* erarly stack */
 unsigned char _kstack[BOOT_KSTACK_SIZE] __attribute__((aligned(8)));

@@ -1,14 +1,15 @@
 #include <console.h>
 #include <arch/kernel_cfg.h>
 #include <arch/ioport.h>
+#include <arch/x86.h>
 
 #define FRAME_BUFFER_BASE_ADDR (0xb8000UL)
 #define FRAME_BUFFER_VIRT_ADDR (FRAME_BUFFER_BASE_ADDR + KERNEL_SPACE_BASE)
 
-#define FRAME_HEIGHT    (80)
-#define FRAME_WIDTH     (25)
+#define FRAME_WIDTH    (80)
+#define FRAME_HEIGHT   (25)
 
-#define ANCHOR_BUF(x,y)    (FRAME_BUFFER_VIRT_ADDR + 2*(FRAME_HEIGHT*y+x))
+#define ANCHOR_BUF(x,y)    (FRAME_BUFFER_VIRT_ADDR + 2*(FRAME_WIDTH*y+x))
 
 /* CGA */
 #define CURSOR_START        0x0A
@@ -18,20 +19,35 @@
 #define CURSOR_POS_MSB      0x0E
 #define CURSOR_POS_LSB      0x0F
 
+struct window {
+    int x1, x2, y1, y2;
+};
+struct cursor {
+    char x, y;
+    char start, end;
+    char default_attr;
+};
+
 struct console_viewer {
     // window attr
-    struct {
-        int x1, x2, y1, y2;
-    } window;
+    struct window wd;
     // cursor attr
-    struct {
-        char x, y;
-        char start, end;
-        char default_attr;
-    } cursor;
+    struct cursor cs;
 };
 
 struct console_viewer viewer;
+
+void place(struct cursor *cs, int x, int y)
+{
+    unsigned short word = x + y*80;
+
+    outb(CGA_INDEX_PORT, CURSOR_POS_LSB);
+    outb(CGA_DATA_PORT, word & 0xff);
+    outb(CGA_INDEX_PORT, CURSOR_POS_MSB);
+    outb(CGA_DATA_PORT, (word >> 8) & 0xff);
+    cs->x = x;
+    cs->y = y;
+}
 
 static inline void console_display_char(int x, int y,
                                         unsigned char attr,
@@ -41,12 +57,103 @@ static inline void console_display_char(int x, int y,
     *fb = ((unsigned short)attr << 8) | c;
 }
 
-static inline void console_display_str(int x, int y,
+void console_display_str(int x, int y,
                                         unsigned char attr,
                                         unsigned char *s)
 {
     unsigned short *fb = (unsigned short*)ANCHOR_BUF(x, y);
     while (*s != '\0') {
-        *fb++ = ((unsigned short)attr << 8) | *s;
+        *fb++ = ((unsigned short)attr << 8) | *s++;
     }
+}
+
+void clear_console(struct console_viewer *cv)
+{
+    int x, y;
+    int width = cv->wd.x2;
+    int height = cv->wd.y2;
+    char c = ' ';
+    char attr = cv->cs.default_attr;
+
+    for(y = cv->wd.y1; y <= height; y++) {
+        for (x = cv->wd.x1; x <= width; x++) {
+            console_display_char(x, y, attr, c);
+        }
+    }
+
+    cv->cs.x = cv->wd.x1;
+    cv->cs.y = cv->wd.y1;
+    return;
+}
+
+void scroll(struct console_viewer *vw)
+{
+
+}
+
+void console_putc(char c)
+{
+    struct console_viewer *vw = &viewer;
+    struct cursor *cs = &vw->cs;
+    struct window *wd = &vw->wd;
+    int x = cs->x;
+    int y = cs->y;
+
+    switch (c) {
+        case '\t':
+            x += 8;
+            if (x >= wd->x2 + 1) {
+                x = wd->x1;
+                if (y == wd->y2) {
+                    scroll(vw);
+                } else {
+                    y++;
+                }
+            } else {
+                // round up to 8byte upper boarder
+                x = ((x + 0x07) & 0xf8);
+            }
+            break;
+        case '\r':
+            x = wd->x1;
+            break;
+        case '\n':
+            if (y == wd->y2) {
+                scroll(vw);
+            } else {
+                y++;
+            }
+            break;
+        case '\b':
+            x--;
+            console_display_char(x, y, cs->default_attr, ' ');
+            break;
+        default:
+            console_display_char(x, y, cs->default_attr, c);
+            x++;
+            if (x >= wd->x2 + 1) {
+                x = wd->x1;
+                if (y == wd->y2) {
+                    scroll(vw);
+                } else {
+                    y++;
+                }
+            }
+            break;
+    }
+
+    place(cs, x, y);
+}
+
+void console_init(void)
+{
+    viewer.wd.x1 = 0;
+    viewer.wd.x2 = FRAME_WIDTH - 1;
+    viewer.wd.y1 = 0;
+    viewer.wd.y2 = FRAME_HEIGHT - 1;
+    viewer.cs.x = 0;
+    viewer.cs.y = 0;
+    viewer.cs.default_attr = 0x07;
+    clear_console(&viewer);
+    place(&viewer.cs, 0, 0);
 }
