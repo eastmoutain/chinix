@@ -2,7 +2,7 @@
 #define X86_H
 
 #include <compiler.h>
-#include <arch/types.h>
+#include <sys/types.h>
 
 __BEGIN_CDECLS
 
