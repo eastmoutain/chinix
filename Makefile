@@ -20,7 +20,7 @@ CFLAGS := -Wall -Wextra -O2 -g -finline -fno-common -fasynchronous-unwind-tables
           -gdwarf-2 -fno-pic -fno-stack-protector -mcmodel=kernel \
 		  -mno-red-zone -MT -MP -MD -nostdlib \
           
-CFLAGS += -I./include/ -I./include/driver/
+CFLAGS += -I./include/ -I./include/driver/ -I./libc/include/
 
 LDFLAGS := -z max-page-size=4096
 
@@ -30,11 +30,17 @@ KERNEL_BOOT_SRC := boot/start.S \
 
 KERNEL_ARCH_SRC := arch/arch.c \
                    arch/mmu.c \
-			       arch/string.c\
 
 KERNEL_INIT_SRC := init/main.c \
 
-KERNEL_SRCS := $(KERNEL_BOOT_SRC) $(KERNEL_ARCH_SRC) $(KERNEL_INIT_SRC)
+LIBC_SRC := libc/stdio.c \
+	        libc/string.c \
+	        libc/printf.c \
+
+KERNEL_SRCS := $(KERNEL_BOOT_SRC) \
+	           $(KERNEL_ARCH_SRC) \
+			   $(KERNEL_INIT_SRC) \
+			   $(LIBC_SRC)
 
 DRIVER_CONSOLE_SRC := driver/console/console.c \
 

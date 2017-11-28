@@ -2,7 +2,7 @@
 #define STRING_H
 
 #include <compiler.h>
-#include <arch/types.h>
+#include <sys/types.h>
 
 __BEGIN_CDECLS
 
