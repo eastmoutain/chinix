@@ -18,6 +18,8 @@
 ## run
 #### run from qemu
   run "make launch_qemu"
+  
   or equivalently run command
+  
   "qemu-system-x86-64 -cdrom chinix.iso [-enable-kvm]"
 
