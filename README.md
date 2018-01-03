@@ -9,14 +9,15 @@
   install grub2, xorror
 
 ## build
-  run "make" to build ELF file.
+  run "make all" to build ELF and ISO file.
   
-  run "make" to generate ISO file, which can be boot from qemu
+  run "make chinix.iso" to generate ISO file, which can be boot from qemu
 
 ---
 
 ## run
 #### run from qemu
-  qemu-system-x86-64 -cdrom chinix.iso
+  run "make launch_qemu"
+  or equivalently run command
+  "qemu-system-x86-64 -cdrom chinix.iso [-enable-kvm]"
 
-  This command will bring up qemu and boot chinix.iso, you will see green text "OK" on the screen.
