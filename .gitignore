@@ -9,3 +9,7 @@
 
 *.iso
 
+cscope.*
+
+tags
+
