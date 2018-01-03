@@ -15,5 +15,12 @@ typedef unsigned int size_t;
 typedef int ssize_t;
 #endif
 
+typedef long long off_t;
+
+typedef uintptr_t addr_t;
+typedef uintptr_t vaddr_t;
+typedef uintptr_t paddr_t;
+
+
 #endif // TYPES_H
 

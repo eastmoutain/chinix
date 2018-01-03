@@ -47,7 +47,7 @@ _common:
 
     movq %rsp, %rdi     /* pass the  iframe using rdi */
 
-    //call exception_handler
+    call x86_exception_handler
 
     /* restore general purpose registers */
     popq %rdi
@@ -87,7 +87,7 @@ l1:
     add $isr_len, %rsi
     add $16, %rdi
     loop l1
-    
+
     lidt _idtr
     ret
 

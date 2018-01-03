@@ -30,6 +30,7 @@ KERNEL_BOOT_SRC := boot/start.S \
 
 KERNEL_ARCH_SRC := arch/arch.c \
                    arch/mmu.c \
+				   arch/exception.c \
 
 KERNEL_INIT_SRC := init/main.c \
 

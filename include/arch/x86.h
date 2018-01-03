@@ -12,7 +12,7 @@ __BEGIN_CDECLS
 struct x86_64_eframe {
     // pushed by command "pusha"
     uint64_t rdi, rsi, rbp, rbx, rdx, rcx, rax;
-    uint64_t r8, r9, f10, r11, r12, r13, r14, r15;
+    uint64_t r8, r9, r10, r11, r12, r13, r14, r15;
     // exception vector
     uint64_t vector;
     // exception error code
@@ -23,7 +23,37 @@ struct x86_64_eframe {
     uint64_t user_sp, user_ss;
 };
 
-typedef struct x86_64_eframe x86_eframe_t;
+typedef struct x86_64_eframe x86_iframe_t;
+
+
+
+static inline void x86_cli(void)
+{
+    asm ("cli");
+}
+
+static inline void x86_sti(void)
+{
+    asm("sti");
+}
+
+static inline void x86_hlt(void)
+{
+    asm ("hlt");
+}
+
+
+static inline uint64_t x86_get_cr2(void)
+{
+    uint64_t rv;
+
+    asm __volatile__ ("movq %%cr2, %0"
+            : "=r" (rv)
+            );
+
+    return rv;
+}
+
 
 // read byte from port
 static inline uint8_t inb(uint16_t port)
