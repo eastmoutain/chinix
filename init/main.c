@@ -5,7 +5,7 @@ int main()
 {
     console_init();
 
-    printf("kdflsjdfklsdkfsldk\n");
+    printf("hello world!\n");
 
     return 0;
 }
