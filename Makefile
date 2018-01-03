@@ -1,6 +1,6 @@
 #V=1
 ifeq ($(V),)
-	V = 
+	V =
 else
 	V := @
 endif
@@ -19,7 +19,7 @@ GRUB_CFG := $(TOPDIR)/tools/grub.cfg
 CFLAGS := -Wall -Wextra -O2 -g -finline -fno-common -fasynchronous-unwind-tables \
           -gdwarf-2 -fno-pic -fno-stack-protector -mcmodel=kernel \
 		  -mno-red-zone -MT -MP -MD -nostdlib \
-          
+
 CFLAGS += -I./include/ -I./include/driver/ -I./libc/include/
 
 LDFLAGS := -z max-page-size=4096
@@ -86,6 +86,6 @@ $(ELF):$(OBJS)
 clean:
 	$(V) rm $(OBJS) $(DEPS) $(ELF) $(ISO)
 
-launch_qemu: $(ISO) 
-	$(V) qemu-system-x86_64 -cdrom $(ISO) --enable-kvm
+launch_qemu: $(ISO)
+	$(V) qemu-system-x86_64 -cdrom $(ISO) -enable-kvm
 
