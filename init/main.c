@@ -1,7 +1,7 @@
 #include <console.h>
 #include <stdio.h>
 
-int main()
+int start_kernel()
 {
     console_init();
 

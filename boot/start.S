@@ -192,7 +192,8 @@ highaddr:
     /* set up the idt */
     call setup_idt
 
-    call main
+    call start_kernel
+
     hlt
 
 0:                          /* just sit around waiting for interrupts */
