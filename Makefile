@@ -32,14 +32,19 @@ KERNEL_ARCH_SRC := arch/arch.c \
                    arch/mmu.c \
 				   arch/exception.c \
 
+KERNEL_DRIVER_SRC := driver/interrupt/interrupt.c \
+                     driver/uart/uart.c \
+
 KERNEL_INIT_SRC := init/main.c \
 
 LIBC_SRC := libc/stdio.c \
 	        libc/string.c \
 	        libc/printf.c \
+			libc/debug.c \
 
 KERNEL_SRCS := $(KERNEL_BOOT_SRC) \
 	           $(KERNEL_ARCH_SRC) \
+			   $(KERNEL_DRIVER_SRC) \
 			   $(KERNEL_INIT_SRC) \
 			   $(LIBC_SRC)
 

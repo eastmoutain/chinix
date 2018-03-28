@@ -47,7 +47,7 @@ _common:
 
     movq %rsp, %rdi     /* pass the  iframe using rdi */
 
-    call x86_exception_handler
+    call x64_exception_handler
 
     /* restore general purpose registers */
     popq %rdi
