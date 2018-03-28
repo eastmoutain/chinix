@@ -36,19 +36,6 @@ static inline bool spinlock_held(spinlock_t *lock)
     return *lock != 0;
 }
 
-static inline void arch_disable_ints(void)
-{
-    __asm__ volatile("" ::: "memory");
-    x64_cli();
-}
-
-static inline void arch_enable_ints(void)
-{
-    x64_sti();
-    __asm__ volatile("" ::: "memory");
-
-}
-
 static inline arch_interrupt_save(spinlock_saved_state_t *state)
 {
     *state = x64_save_flags();

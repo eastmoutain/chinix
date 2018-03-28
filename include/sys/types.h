@@ -27,5 +27,12 @@ enum handler_return {
     INT_RESCHEDULE,
 };
 
+typedef uint64_t time_t;
+
+#define TIME_GTE(a, b) ((a) - (b) >= 0)
+#define TIME_LTE(a, b) ((a) - (b) <= 0)
+#define TIME_GT(a, b) ((a) - (b) > 0)
+#define TIME_LT(a, b) ((a) - (b) < 0)
+
 #endif // TYPES_H
 

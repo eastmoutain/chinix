@@ -37,6 +37,32 @@ static inline void x64_sti(void)
     asm("sti");
 }
 
+static inline void arch_disable_ints(void)
+{
+    __asm__ volatile("" ::: "memory");
+    x64_cli();
+}
+
+static inline void arch_enable_ints(void)
+{
+    x64_sti();
+    __asm__ volatile("" ::: "memory");
+
+}
+
+static inline bool arch_ints_disabled(void)
+{
+    x64_flags_t flags;
+
+    asm ("pushfq;"
+        "popq %%rax\n\t"
+        : "=a" (flags)
+        :: "memory";
+        )
+
+    return !(flags & (1 << 9));
+}
+
 static inline void x64_hlt(void)
 {
     asm ("hlt");
