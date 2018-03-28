@@ -5,9 +5,9 @@
 
 #define debug_assert(x) \
     do { \
-        if(!x) \
+        if(!(x)) \
             platform_panic("\npanic...\n" \
-                           "asserted failed at (%s:%d): reason: %s\n", __FILE__, __LINE__, #x); \
+                           "asserted failed at (%s:%d): reason: (%s)\n", __FILE__, __LINE__, #x); \
     } while (0)
 
 #endif
