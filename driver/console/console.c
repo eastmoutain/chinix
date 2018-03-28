@@ -57,7 +57,7 @@ static inline unsigned short read_pos_value(int x, int y)
 static inline void set_pos_value(int x, int y, unsigned short value)
 {
     unsigned short *fb = (unsigned short*)ANCHOR_BUF(x, y);
-    *fb = value; 
+    *fb = value;
 }
 
 static inline void console_display_char(int x, int y,
@@ -104,14 +104,14 @@ void scroll(struct console_viewer *vw)
     struct cursor *cs = &vw->cs;
     unsigned char default_attr = cs->default_attr;
     unsigned short value;
-    
+
     for (y = wd->y1 + 1; y <= wd->y2; y++) {
         for (x = wd->x1; x <= wd->x2; x++) {
            value  = read_pos_value(x, y);
            set_pos_value(x, y-1, value);
         }
     }
-    
+
     for (x = wd->x1; x <= wd->x2; x++) {
         set_pos_value(x, wd->y2, default_attr << 8);
     }

@@ -1,11 +1,12 @@
 #include <console.h>
 #include <stdio.h>
+#include <assert.h>
 
 int start_kernel()
 {
     console_init();
 
-    printf("hello world!\n");
+    debug_assert(0);
 
     return 0;
 }

@@ -9,7 +9,7 @@ __BEGIN_CDECLS
 /**
  * exception frame on stack
  */
-struct x86_64_eframe {
+struct x64_eframe {
     // pushed by command "pusha"
     uint64_t rdi, rsi, rbp, rbx, rdx, rcx, rax;
     uint64_t r8, r9, r10, r11, r12, r13, r14, r15;
@@ -23,27 +23,27 @@ struct x86_64_eframe {
     uint64_t user_sp, user_ss;
 };
 
-typedef struct x86_64_eframe x86_iframe_t;
+typedef struct x64_eframe x64_iframe_t;
 
 
 
-static inline void x86_cli(void)
+static inline void x64_cli(void)
 {
-    asm ("cli");
+    asm volatile ("cli");
 }
 
-static inline void x86_sti(void)
+static inline void x64_sti(void)
 {
     asm("sti");
 }
 
-static inline void x86_hlt(void)
+static inline void x64_hlt(void)
 {
     asm ("hlt");
 }
 
 
-static inline uint64_t x86_get_cr2(void)
+static inline uint64_t x64_get_cr2(void)
 {
     uint64_t rv;
 
@@ -54,6 +54,29 @@ static inline uint64_t x86_get_cr2(void)
     return rv;
 }
 
+typedef uint64_t x64_flags_t;
+
+static inline uint64_t x64_save_flags(void)
+{
+    uint64_t state;
+    __asm__ volatile (
+        "pushfq; \n\t"
+        "popq %0 \n\t"
+        : "=rm" (state)
+        :: "memory");
+
+    return state;
+}
+
+
+static inline void x64_restore_flags(uint64_t flags)
+{
+    __asm__ volatile (
+            "pushq %0;"
+            "popfq"
+            :: "g" (flags)
+            : "memory", "cc");
+}
 
 // read byte from port
 static inline uint8_t inb(uint16_t port)

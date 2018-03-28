@@ -37,6 +37,7 @@ KERNEL_INIT_SRC := init/main.c \
 LIBC_SRC := libc/stdio.c \
 	        libc/string.c \
 	        libc/printf.c \
+			libc/debug.c \
 
 KERNEL_SRCS := $(KERNEL_BOOT_SRC) \
 	           $(KERNEL_ARCH_SRC) \
@@ -45,7 +46,11 @@ KERNEL_SRCS := $(KERNEL_BOOT_SRC) \
 
 DRIVER_CONSOLE_SRC := driver/console/console.c \
 
-DRIVER_SRCS := $(DRIVER_CONSOLE_SRC)
+DRIVER_UART_SRC := driver/uart/uart.c \
+
+DRIVER_INTERRUPT_SRC := driver/interrupt/interrupt.c \
+
+DRIVER_SRCS := $(DRIVER_CONSOLE_SRC) $(DRIVER_UART_SRC) $(DRIVER_INTERRUPT_SRC)
 
 MM_SRCS:=
 

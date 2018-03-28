@@ -22,5 +22,10 @@ typedef uintptr_t vaddr_t;
 typedef uintptr_t paddr_t;
 
 
+enum handler_return {
+    INT_NO_RESCHEDULE = 0,
+    INT_RESCHEDULE,
+};
+
 #endif // TYPES_H
 

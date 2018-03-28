@@ -16,7 +16,7 @@
 #define INT_XM              0x13
 
 
-static void dump_fault_frame(x86_iframe_t *frame)
+static void dump_fault_frame(x64_iframe_t *frame)
 {
 #if 0 // ARCH_X86_32
     printf(" CS:     %04x EIP: %08x EFL: %08x CR2: %08x\n",
@@ -31,7 +31,7 @@ static void dump_fault_frame(x86_iframe_t *frame)
     printf("============ dump exception frame ============\n");
     printf(" CS:  %016llx RIP: %016llx\n"
            " EFL: %016llx CR2: %016llx\n",
-            frame->cs, frame->rip, frame->rflag, x86_get_cr2());
+            frame->cs, frame->rip, frame->rflag, x64_get_cr2());
     printf(" RAX: %016llx RBX: %016llx\n"
            " RCX: %016llx RDX: %016llx\n",
             frame->rax, frame->rbx, frame->rcx, frame->rdx);
@@ -58,19 +58,19 @@ static void dump_fault_frame(x86_iframe_t *frame)
 }
 
 
-static void exception_die(x86_iframe_t *frame, const char *msg)
+static void exception_die(x64_iframe_t *frame, const char *msg)
 {
     printf(msg);
     dump_fault_frame(frame);
 
     for (;;) {
-        x86_cli();
-        x86_hlt();
+        x64_cli();
+        x64_hlt();
     }
 }
 
 
-void x86_exception_handler(x86_iframe_t *frame)
+void x64_exception_handler(x64_iframe_t *frame)
 {
     unsigned int vector = frame->vector;
 
