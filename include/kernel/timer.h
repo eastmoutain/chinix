@@ -20,9 +20,9 @@ struct timer {
 
 typedef struct timer timer_t;
 
-#define TIMER_INITIAL_VALUE (t) \
+#define TIMER_INITIAL_VALUE(t) \
 { \
-    .node = LIST_INITIAL_CLEARED_VALUE, \
+    .node = {NULL, NULL}, \
     .sched_time = 0, \
     .periodic_time = 0, \
     .callback = NULL, \

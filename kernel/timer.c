@@ -1,8 +1,9 @@
 #include <debug.h>
 #include <assert.h>
 #include <stdio.h>
-#include <timer.h>
+#include <kernel/timer.h>
 #include <arch/spinlock.h>
+#include <list.h>
 
 spinlock_t timer_lock;
 
@@ -25,25 +26,29 @@ static void insert_timer_in_queue(timer_t *timer)
         if (TIME_GT(entry->sched_time, timer->sched_time)) {
             list_add_before(&entry->node, &timer->node);
             return;
-        }        
+        }
     }
 
-    list_add_tail(*timer_queue, &timer->node);
+    list_add_tail(&timer_queue, &timer->node);
 }
 
-static void timer_set(tiemr_t *timer, time_t delay, time_t period, timer_callback callback, void *arg)
+static void timer_set(timer_t *timer, time_t delay, time_t period, timer_callback callback, void *arg)
 {
 
 }
 
-
+// FIXME not impleted
+static enum handler_return timer_tick(void *arg, time_t now)
+{
+    return INT_NO_RESCHEDULE;
+}
 
 
 void timer_init(void)
 {
-    timer_lock = SPIN_LOCK_INITIAL_VALUE;
+    timer_lock = SPINLOCK_INITIAL_VALUE;
 
-    list_init(&timer.timer_queue);
+    list_init(&timer_queue);
 
-    platfomr_set_periodic_timer(timer_tick, NULL, 10); // 10ms
+    platform_set_periodic_timer(timer_tick, NULL, 10); // 10ms
 }

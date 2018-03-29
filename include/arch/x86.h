@@ -3,6 +3,7 @@
 
 #include <compiler.h>
 #include <sys/types.h>
+#include <stdbool.h>
 
 __BEGIN_CDECLS
 
@@ -25,7 +26,16 @@ struct x64_eframe {
 
 typedef struct x64_eframe x64_iframe_t;
 
+struct x64_context_frame {
+    uint64_t r15, r14, r13, r12;
+    uint64_t rbp;
+    uint64_t rbx;
+    uint64_t rflags;
+    uint64_t rip;
+};
 
+
+typedef uint64_t x64_flags_t;
 
 static inline void x64_cli(void)
 {
@@ -57,8 +67,7 @@ static inline bool arch_ints_disabled(void)
     asm ("pushfq;"
         "popq %%rax\n\t"
         : "=a" (flags)
-        :: "memory";
-        )
+        :: "memory");
 
     return !(flags & (1 << 9));
 }
@@ -80,7 +89,6 @@ static inline uint64_t x64_get_cr2(void)
     return rv;
 }
 
-typedef uint64_t x64_flags_t;
 
 static inline uint64_t x64_save_flags(void)
 {

@@ -4,7 +4,7 @@
 #include <arch/x86.h>
 #include <stdbool.h>
 
-#define SPINLOCK_INIT_VAL   (0)
+#define SPINLOCK_INITIAL_VALUE   (0)
 
 typedef unsigned long spinlock_t;
 
@@ -28,7 +28,7 @@ static inline int spin_unlock(spinlock_t *lock)
 
 static inline spinlock_init(spinlock_t *lock)
 {
-    *lock = SPINLOCK_INIT_VAL;
+    *lock = SPINLOCK_INITIAL_VALUE;
 }
 
 static inline bool spinlock_held(spinlock_t *lock)

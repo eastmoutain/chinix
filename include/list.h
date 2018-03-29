@@ -16,8 +16,9 @@ struct list_node {
     struct list_node *next;
 };
 
-#define LIST_INIT_VALUE(list) {&(list), &(list)}
-#define LIST_INIT_CLEARED_VALUE() {NULL, NULL}
+#define LIST_INITIAL_VALUE(list) {&(list), &(list)}
+
+#define LIST_INITIAL_CLEARED_VALUE() {NULL, NULL}
 
 static inline void list_init(struct list_node *list)
 {
@@ -31,7 +32,7 @@ static inline void list_clear_node(struct list_node *list)
 
 static inline bool list_in_list(struct list_node *node)
 {
-    if (node->prev == NULL && list->next == NULL)
+    if (node->prev == NULL && node->next == NULL)
         return false;
     else
         return true;
@@ -47,7 +48,7 @@ static inline void list_add_head(struct list_node *head, struct list_node *node)
 
 #define list_add_after(head, node) list_add_head(head, node)
 
-struct inline void list_add_tail(struct list_node *head, struct list_node *node)
+static inline void list_add_tail(struct list_node *head, struct list_node *node)
 {
     node->prev = head->prev;
     node->next = head;
@@ -99,8 +100,8 @@ static inline struct list_node* list_peek_head(struct list_node *head)
 
 static inline struct list_node* list_peek_tail(struct list_node *head)
 {
-    if (list->prev != list) {
-        return list->prev;
+    if (head->prev != head) {
+        return head->prev;
     } else {
         return NULL;
     }
@@ -140,7 +141,7 @@ static inline bool list_is_empty(struct list_node *head)
         node = temp, temp = (node)->next)
 
 #define list_foreach_entry(head, entry, type, member) \
-    for ((entry) = container_of((head)->next, type, member) \
+    for ((entry) = container_of((head)->next, type, member); \
          &(entry)->member != head; \
         (entry) = container_of((entry)->member.next, type, member))
 

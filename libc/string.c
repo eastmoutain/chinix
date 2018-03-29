@@ -1,11 +1,23 @@
 #include <stddef.h>
 #include <string.h>
+#include <assert.h>
 
 char* strcpy(char *dest, const char *src)
 {
     char *p = dest;
 
     while (*src != '\0') {
+        *dest++ = *src++;
+    }
+
+    return p;
+}
+
+char* strncpy(char *dest, const char *src, size_t n)
+{
+    char *p = dest;
+
+    while (*src != '\0' && n--) {
         *dest++ = *src++;
     }
 

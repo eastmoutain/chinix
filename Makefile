@@ -24,44 +24,36 @@ CFLAGS += -I./include/ -I./include/driver/ -I./libc/include/
 
 LDFLAGS := -z max-page-size=4096
 
-KERNEL_BOOT_SRC := boot/start.S \
+BOOT_SRC := boot/start.S \
                    boot/gdt.S \
 	               boot/idt.S \
 
-KERNEL_ARCH_SRC := arch/arch.c \
+ARCH_SRC := arch/arch.c \
                    arch/mmu.c \
 				   arch/exception.c \
 
-KERNEL_DRIVER_SRC := driver/interrupt/interrupt.c \
-                     driver/uart/uart.c \
+DRIVER_SRC := driver/console/console.c \
+                     driver/interrupt/interrupt.c \
+					 driver/timer/platform_timer.c \
+					 driver/uart/uart.c \
 
-KERNEL_INIT_SRC := init/main.c \
+KERNEL_SRC := kernel/timer.c \
+
+INIT_SRC := init/main.c \
 
 LIBC_SRC := libc/stdio.c \
 	        libc/string.c \
 	        libc/printf.c \
 			libc/debug.c \
 
-KERNEL_SRCS := $(KERNEL_BOOT_SRC) \
-	           $(KERNEL_ARCH_SRC) \
-			   $(KERNEL_DRIVER_SRC) \
-			   $(KERNEL_INIT_SRC) \
+KERNEL_SRCS := $(BOOT_SRC) \
+	           $(ARCH_SRC) \
+			   $(DRIVER_SRC) \
+			   $(KERNEL_SRC) \
+			   $(INIT_SRC) \
 			   $(LIBC_SRC)
 
-DRIVER_CONSOLE_SRC := driver/console/console.c \
-
-DRIVER_UART_SRC := driver/uart/uart.c \
-
-DRIVER_INTERRUPT_SRC := driver/interrupt/interrupt.c \
-
-DRIVER_SRCS := $(DRIVER_CONSOLE_SRC) $(DRIVER_UART_SRC) $(DRIVER_INTERRUPT_SRC)
-
-MM_SRCS:=
-
-LIB_SRCS :=
-
-
-SRCS := $(KERNEL_SRCS) $(DRIVER_SRCS) $(MM_SRCS) $(LIB_SRCS)
+SRCS := $(KERNEL_SRCS)
 
 OBJS = $(patsubst %.c, %.o, $(SRCS:.S=.o))
 DEPS = $(OBJS:.o=.d)

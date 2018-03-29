@@ -8,6 +8,6 @@
 #define ERR_IO                  (2)
 #define ERR_BUSY                (3)
 #define ERR_AGAIN               (4)
-
+#define ERR_THREAD_DETACHED     (5)
 
 #endif // ERRNO_H

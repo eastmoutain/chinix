@@ -3,6 +3,7 @@
 #include <arch/x86.h>
 #include <sys/types.h>
 #include <stdio.h>
+#include <arch/interrupt.h>
 
 /* exceptions */
 #define INT_DIVIDE_0        0x00
@@ -72,11 +73,17 @@ static void exception_die(x64_iframe_t *frame, const char *msg)
 
 void x64_exception_handler(x64_iframe_t *frame)
 {
+    enum handler_return ret;
+
     unsigned int vector = frame->vector;
 
     switch(vector) {
         case INT_DIVIDE_0:
             exception_die(frame, "devide zero exception\n");
+            break;
+
+        case 0x20 ... 0xff:
+            ret = platform_irq(frame);
             break;
 
         default:

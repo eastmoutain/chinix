@@ -115,7 +115,7 @@ static void issue_eoi(uint32_t vector)
     }
 }
 
-void init_interrupts(void)
+void platform_init_interrupts(void)
 {
     map_interrupt_controller(PIC1_BASE, PIC2_BASE);
 }
@@ -152,11 +152,7 @@ void mask_all_interrupt(void)
 
 int unmask_interrupt(uint32_t vector)
 {
-    if (vector >= INT_MAX_VECTORS) {
-        printf("vector 0x%x exceeds max interrupt vector 0x%x\r\n",
-                vector, INT_MAX_VECTORS);
-        return ERR_ARG;
-    }
+    debug_assert(vector < INT_MAX_VECTORS);
 
     spinlock_saved_state_t state;
     spinlock_irq_save(&interrupt_spinlock, state);
@@ -173,12 +169,14 @@ enum handler_return platform_irq(x64_iframe_t *frame)
 {
     unsigned int vector = frame->vector;
 
-    debug_assert(vector >= INT_MAX_VECTORS);
+    debug_assert(vector < INT_MAX_VECTORS);
 
     enum handler_return ret = INT_NO_RESCHEDULE;
 
-    if (int_handler_table[vector].handler)
-        ret = int_handler_table[vector].handler(int_handler_table[vector].arg);
+    int_handler handler = int_handler_table[vector].handler;
+    void *arg = int_handler_table[vector].arg;
+    if (handler)
+        ret = handler(arg);
 
     issue_eoi(vector);
 
@@ -188,7 +186,9 @@ enum handler_return platform_irq(x64_iframe_t *frame)
 
 void register_int_handler(uint32_t vector, int_handler handler, void *arg)
 {
-   debug_assert(vector >= INT_MAX_VECTORS);
+   debug_assert(vector < INT_MAX_VECTORS);
+
+   printf("register vector 0x%x, handler %p\r\n", vector, handler);
 
    spinlock_saved_state_t state;
    spinlock_irq_save(&interrupt_spinlock, state);
