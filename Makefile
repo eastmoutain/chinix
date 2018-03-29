@@ -28,14 +28,15 @@ BOOT_SRC := boot/start.S \
                    boot/gdt.S \
 	               boot/idt.S \
 
-ARCH_SRC := arch/arch.c \
-                   arch/mmu.c \
-				   arch/exception.c \
+ARCH_SRC := arch/x64_context_switch.S \
+			arch/arch.c \
+            arch/mmu.c \
+			arch/exception.c \
 
 DRIVER_SRC := driver/console/console.c \
-                     driver/interrupt/interrupt.c \
-					 driver/timer/platform_timer.c \
-					 driver/uart/uart.c \
+              driver/interrupt/interrupt.c \
+			  driver/timer/platform_timer.c \
+			  driver/uart/uart.c \
 
 KERNEL_SRC := kernel/timer.c \
 

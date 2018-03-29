@@ -17,6 +17,10 @@ static uint32_t run_queue_bitmap;
 
 static thread_t idle_thread;
 
+static thread_t *current_thread = NULL;
+
+extern void x64_thread_context_switch(vaddr_t *sp1, vaddr_t *sp2);
+
 static void insert_in_run_queue_head(thread_t *thread)
 {
     debug_assert(thread->state == THREAD_READY);
@@ -75,7 +79,7 @@ static thread_t* get_new_thread(void)
     uint32_t bitmap = run_queue_bitmap;
     int q_up_bound = sizeof(run_queue_bitmap) * 8;
     for (int q = 0; q < q_up_bound; q++) {
-        if (bitmap & 0x1)
+        if (bitmap & (1 << q))
             break;
     }
 
@@ -98,10 +102,58 @@ idle:
     return idle_thread();
 }
 
+static thread_t* get_current_thread(void)
+{
+    return current_thread;
+}
 
-void thread_become_idle(void);
-void thread_set_name(const char *name);
-void thread_set_priority(int priority);
+static void set_current_thread(thread_t *thread)
+{
+    current_thread = thread;
+}
+static bool thread_is_idle(thread_t *thread)
+{
+    return !!(thread->flags & THREAD_FLAG_IDLE);
+}
+
+void thread_become_idle(void)
+{
+
+}
+
+void thread_set_name(const char *name)
+{
+    spinlock_saved_state_t state;
+
+    thread_t *cur = thread_get_current();
+
+    THREAD_LOCK(state);
+    strncpy(cur->name, name, strlen(name));
+    THREAD_UNLOCK(state);
+}
+
+void thread_set_priority(int priority)
+{
+    spinlock_saved_state_t state;
+
+    thread_t *cur = thread_get_current();
+
+    THREAD_LOCK(state);
+
+    if (priority <= IDLE_PRIORITY) {
+        priority = IDLE_PRIORITY + 1;
+    }
+
+    if (priority > HIGHEST_PRIORITY) {
+        priority = HIGHEST_PRIORITY;
+    }
+
+    cur->priority = priority;
+    insert_in_run_queue_head(cur);
+    thread_resched();
+
+    THREAD_UNLOCK(state);
+}
 
 
 thread_t* thread_create(thread_t *thread, const char *name, thread_start_routine entry, void *arg, int priority, void *stack, size_t stack_size)
@@ -152,7 +204,7 @@ void thread_resched(void)
 
     set_current_thread(new);
 
-    thread_context_switch(old, new);
+    x64_thread_context_switch(&old->sp, &new->sp);
 }
 
 void thread_yield(thread_t *thread)
@@ -252,19 +304,63 @@ int thread_detach(thread_t *thread)
     }
 }
 
-int thread_detach_and_resume(thread_t *thread);
+int thread_detach_and_resume(thread_t *thread)
+{
+    int err;
+
+    err = thread_detach(thread);
+    if (err < 0)
+        return err;
+
+    thread_resume(thread);
+}
 
 
-void thread_exit(int retcode);
-void thread_sleep(time_t delay);
+void thread_exit(int retcode)
+{
+    spinlock_saved_state_t state;
+    thread_t *thread = get_current_thread();
 
-void thread_block(void);
-void thread_unblock(thread_t *thread, bool resched);
+    debug_assert(thread->state == RUNNING);
+    debug_assert(!thread_is_idle(thread));
 
-enum hander_return thread_timer_tick(void);
+    THREAD_LOCK(state);
 
-thread_t* get_current_thread(void);
-void set_current_thread(thread_t *thread);
+    thread->state = THREAD_DEATH;
+    thread->retcode = retcode;
+
+    if (thread->flags & THREAD_FLAG_DETACHED) {
+        list_delete(&thread->thread_list_node);
+    } else {
+        wait_queue_wake_all(&thread_retcode_wait_queue, false, 0);
+    }
+
+    thread_resched();
+
+    platform_panic("fell through thread_exit\n");
+}
+
+void thread_sleep(time_t delay)
+{
+
+}
+
+void thread_block(void)
+{
+
+}
+
+void thread_unblock(thread_t *thread, bool resched)
+{
+
+}
+
+enum hander_return thread_timer_tick(void)
+{
+
+}
+
+
 
 
 
