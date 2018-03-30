@@ -20,7 +20,7 @@ struct list_node {
 
 #define LIST_INITIAL_CLEARED_VALUE() {NULL, NULL}
 
-static inline void list_init(struct list_node *list)
+static inline void list_initialize(struct list_node *list)
 {
     list->prev = list->next = list;
 }

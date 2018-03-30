@@ -14,7 +14,7 @@
 #define PHYS(x) ((x) - PHYS_ADDR_DELTA)
 
 
-#define BOOT_KSTACK_SIZE 0x1000  // 4K
+#define BOOT_KSTACK_SIZE 0x100000  // 4K
 
 
 #define NUM_INT 0x31

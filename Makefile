@@ -25,20 +25,22 @@ CFLAGS += -I./include/ -I./include/driver/ -I./libc/include/
 LDFLAGS := -z max-page-size=4096
 
 BOOT_SRC := boot/start.S \
-                   boot/gdt.S \
-	               boot/idt.S \
+            boot/gdt.S \
+            boot/idt.S \
 
 ARCH_SRC := arch/x64_context_switch.S \
-			arch/arch.c \
+            arch/arch.c \
             arch/mmu.c \
-			arch/exception.c \
+            arch/exception.c \
 
 DRIVER_SRC := driver/console/console.c \
               driver/interrupt/interrupt.c \
-			  driver/timer/platform_timer.c \
-			  driver/uart/uart.c \
+              driver/timer/platform_timer.c \
+              driver/uart/uart.c \
 
-KERNEL_SRC := kernel/timer.c \
+KERNEL_SRC := kernel/thread.c \
+	          kernel/timer.c \
+			  kernel/wait_queue.c \
 
 INIT_SRC := init/main.c \
 

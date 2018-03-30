@@ -32,6 +32,10 @@ typedef struct timer timer_t;
 void timer_initialize(timer_t *timer);
 void timer_set_periodic(timer_t *timer, time_t period, timer_callback callback, void *arg);
 
+void timer_set_oneshot(timer_t *timer, time_t period, timer_callback callback, void *arg);
+
 void timer_cancel(timer_t *timer);
+
+void timer_init(void);
 
 #endif // TIMER_H

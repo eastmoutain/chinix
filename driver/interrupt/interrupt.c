@@ -52,7 +52,7 @@ static void map_interrupt_controller(uint32_t pic1, uint32_t pic2)
 }
 
 
-static interrupt_enable(uint32_t vector, bool enable)
+static void interrupt_enable(uint32_t vector, bool enable)
 {
     if (vector >= PIC1_BASE && vector < PIC1_BASE + 8) {
         vector -= PIC1_BASE;
@@ -117,6 +117,7 @@ static void issue_eoi(uint32_t vector)
 
 void platform_init_interrupts(void)
 {
+    printf("init interrupt controller\r\n");
     map_interrupt_controller(PIC1_BASE, PIC2_BASE);
 }
 

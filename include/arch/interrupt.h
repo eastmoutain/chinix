@@ -26,8 +26,7 @@
 
 void init_interrupts(void);
 int mask_interrupt(uint32_t vector);
-int unmask_interrup(uint32_t vector);
-
+int unmask_interrupt(uint32_t vector);
 typedef enum handler_return (*int_handler)(void *arg);
 
 void register_int_handler(uint32_t vector, int_handler handler, void *arg);

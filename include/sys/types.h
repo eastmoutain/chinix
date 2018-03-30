@@ -28,11 +28,12 @@ enum handler_return {
 };
 
 typedef uint64_t time_t;
+#define INFINIT_TIME (0xFFFFFFFF)
 
-#define TIME_GTE(a, b) ((a) - (b) >= 0)
-#define TIME_LTE(a, b) ((a) - (b) <= 0)
-#define TIME_GT(a, b) ((a) - (b) > 0)
-#define TIME_LT(a, b) ((a) - (b) < 0)
+#define TIME_GTE(a, b) ((a) >= (b))
+#define TIME_LTE(a, b) ((a) <= (b))
+#define TIME_GT(a, b) ((a) > (b))
+#define TIME_LT(a, b) ((a) < (b))
 
 #endif // TYPES_H
 

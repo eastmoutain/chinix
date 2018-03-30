@@ -173,7 +173,7 @@ void console_putc(char c)
 
 int console_put_str(const char *str, size_t len)
 {
-    int i;
+    size_t i;
 
     for (i = 0; i < len; i++) {
         if (str[i] == '\n')

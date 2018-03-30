@@ -3,11 +3,30 @@
 #ifndef ERRNO_H
 #define ERRNO_H
 
-#define NO_ERR                  (0)
-#define ERR_ARG                 (1)
-#define ERR_IO                  (2)
-#define ERR_BUSY                (3)
-#define ERR_AGAIN               (4)
-#define ERR_THREAD_DETACHED     (5)
+enum errno {
+    NO_ERR = 0,
+    ERR_ARG,
+    ERR_IO,
+    ERR_BUSY,
+    ERR_AGAIN,
+    ERR_THREAD_DETACHED,
+    ERR_NOT_BLOCKED,
+    ERR_TIMED_OUT,
+    ERR_OBJECT_DESTORYED,
+};
+
+/*
+const char* err_str[] = {
+    {"no err"},
+    {"err arg"},
+    {"err io"},
+    {"err busy"},
+    {"err again"},
+    {"err thread detached"},
+    {"err not blocked"},
+    {"err timed out"},
+    {"err object destoryed"},
+};
+*/
 
 #endif // ERRNO_H

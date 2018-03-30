@@ -21,12 +21,12 @@ static inline int spin_trylock(spinlock_t *lock)
     return 0;
 }
 
-static inline int spin_unlock(spinlock_t *lock)
+static inline void spin_unlock(spinlock_t *lock)
 {
     *lock = 0;
 }
 
-static inline spinlock_init(spinlock_t *lock)
+static inline void spinlock_init(spinlock_t *lock)
 {
     *lock = SPINLOCK_INITIAL_VALUE;
 }
@@ -36,13 +36,13 @@ static inline bool spinlock_held(spinlock_t *lock)
     return *lock != 0;
 }
 
-static inline arch_interrupt_save(spinlock_saved_state_t *state)
+static inline void arch_interrupt_save(spinlock_saved_state_t *state)
 {
     *state = x64_save_flags();
     arch_disable_ints();
 }
 
-static inline arch_interrupt_restore(spinlock_saved_state_t state)
+static inline void arch_interrupt_restore(spinlock_saved_state_t state)
 {
     x64_restore_flags(state);
 }

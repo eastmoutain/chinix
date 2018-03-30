@@ -51,17 +51,13 @@ time_t current_time(void)
 static enum handler_return os_timer_tick(void *arg)
 {
     uint64_t delta;
-    static uint32_t tick_cnt = 0;
-   // if ((tick_cnt & 0xff) == 0)
-        printf("timer tick cnt %d\r\n", tick_cnt);
-    tick_cnt++;
 
     timer_current_time += timer_delta_time;
     time_t time = current_time();
 
     if (t_callback && timer_current_time >= next_trigger_time) {
         delta = timer_current_time - next_trigger_time;
-        next_trigger_time = timer_current_time + next_trigger_time - delta;
+        next_trigger_time = timer_current_time + next_trigger_delta - delta;
         return t_callback(callback_arg, time);
     } else {
         return INT_NO_RESCHEDULE;
@@ -103,6 +99,8 @@ static void set_pit_frequency(uint32_t frequency)
 
 void platform_init_timer(void)
 {
+    printf("platform init timer\r\n");
+
     timer_current_time = 0;
     ticks_per_ms = INTERNAL_FREQ / 100;
     set_pit_frequency(1000); // 1ms granularity
