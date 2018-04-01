@@ -35,7 +35,7 @@ void insert_in_run_queue_head(thread_t *thread)
     debug_assert(spinlock_held(&thread_lock));
 
     list_add_head(&run_queue[thread->priority], &thread->queue_node);
-    run_queue_bitmap |= 1<<thread->priority;
+    run_queue_bitmap |= (1<<thread->priority);
 }
 
 void insert_in_run_queue_tail(thread_t *thread)
@@ -46,7 +46,7 @@ void insert_in_run_queue_tail(thread_t *thread)
     debug_assert(spinlock_held(&thread_lock));
 
     list_add_tail(&run_queue[thread->priority], &thread->queue_node);
-    run_queue_bitmap |= 1<<thread->priority;
+    run_queue_bitmap |= (1<<thread->priority);
 }
 
 static void init_thread_strcut(thread_t *thread, const char *name)
@@ -66,6 +66,8 @@ static void initial_thread_func(void)
     thread_t *thread = get_current_thread();
 
     debug_assert(thread->entry != NULL);
+
+    printf("cur thread %s\r\n", thread->name);
 
     int ret = thread->entry(thread->arg);
 
@@ -139,9 +141,25 @@ static bool thread_is_idle(thread_t *thread)
     return !!(thread->flags & THREAD_FLAG_IDLE);
 }
 
-void thread_become_idle(void)
+void thread_preempt(void)
 {
+    thread_t *thread = get_current_thread();
 
+    debug_assert(thread->state == THREAD_RUNNING);
+
+    spinlock_saved_state_t state;
+
+    THREAD_LOCK(state);
+    thread->state = THREAD_READY;
+    if(!(thread_is_idle(thread))) {
+        if (thread->remaining_quantum > 0)
+            insert_in_run_queue_head(thread);
+        else
+            insert_in_run_queue_tail(thread);
+    }
+
+    thread_resched();
+    THREAD_UNLOCK(state);
 }
 
 void thread_resched(void)
@@ -164,7 +182,6 @@ void thread_resched(void)
 
     set_current_thread(new);
 
-    printf("context switch\r\n");
     x64_thread_context_switch(&old->sp, &new->sp);
 }
 
@@ -229,6 +246,10 @@ thread_t* thread_create(thread_t *thread, const char *name, thread_start_routine
     list_add_tail(&thread_list, &thread->thread_list_node);
     THREAD_UNLOCK(state);
 
+    printf("created thread %s, prio 0x%x, stack %p\r\n"
+            "stack_size 0x%lx, routine %p, sp 0x%lx\n\r",
+            thread->name, thread->priority, thread->stack, thread->stack_size,
+            thread->entry, thread->sp);
     return thread;
 }
 
@@ -244,7 +265,9 @@ void thread_yield(void)
     old->state= THREAD_READY;
     old->remaining_quantum = 0;
 
+
     if (!thread_is_idle(old)) {
+        printf("thread_yield, cur thread %s, flags 0x%x\r\n", old->name, old->flags);
         insert_in_run_queue_tail(old);
     }
 
@@ -437,7 +460,9 @@ enum handler_return thread_timer_tick(void)
     thread_t *thread = get_current_thread();
 
     thread->remaining_quantum--;
+    //printf("thread %s quantum 0x%x\r\n", thread->name, thread->remaining_quantum);
     if (thread->remaining_quantum <= 0) {
+        //printf("thread %s will be shecduled out\r\n", thread->name);
         return INT_RESCHEDULE;
     } else {
         return INT_NO_RESCHEDULE;
@@ -475,6 +500,8 @@ void thread_init_early(void)
         list_initialize(&run_queue[i]);
     }
 
+    run_queue_bitmap = 0;
+
     list_initialize(&thread_list);
 
     thread_t *thread = idle_thread();
@@ -494,14 +521,14 @@ static void idle_thread_routine(void)
         asm("nop");
     }
 }
-void thread_becomd_idle(void)
+void thread_become_idle(void)
 {
     debug_assert(arch_ints_disabled());
 
     thread_t *thread = get_current_thread();
     thread_set_name("idle");
     thread->priority = IDLE_PRIORITY;
-    thread->flags != THREAD_FLAG_IDLE;
+    thread->flags |= THREAD_FLAG_IDLE;
 
     arch_enable_ints();
     thread_yield();

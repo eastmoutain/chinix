@@ -4,6 +4,7 @@
 #include <sys/types.h>
 #include <stdio.h>
 #include <arch/interrupt.h>
+#include <kernel/thread.h>
 
 /* exceptions */
 #define INT_DIVIDE_0        0x00
@@ -73,7 +74,7 @@ static void exception_die(x64_iframe_t *frame, const char *msg)
 
 void x64_exception_handler(x64_iframe_t *frame)
 {
-    enum handler_return ret;
+    enum handler_return ret = INT_NO_RESCHEDULE;
 
     unsigned int vector = frame->vector;
 
@@ -89,6 +90,10 @@ void x64_exception_handler(x64_iframe_t *frame)
         default:
             exception_die(frame, "unknown exception\n");
             break;
+    }
+
+    if (ret == INT_RESCHEDULE) {
+        thread_preempt();
     }
 
 }

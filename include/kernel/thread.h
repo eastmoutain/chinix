@@ -95,7 +95,9 @@ thread_t* get_current_thread(void);
 void set_current_thread(thread_t *thread);
 
 void thread_early_init(void);
-void thread_becomd_idle(void);
+void thread_become_idle(void);
+
+void thread_preempt(void);
 
 extern spinlock_t thread_lock;
 

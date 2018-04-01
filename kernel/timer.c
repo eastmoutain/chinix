@@ -48,9 +48,6 @@ static void timer_set(timer_t *timer, time_t delay, time_t period, timer_callbac
     spinlock_irq_save(&timer_lock, state);
     insert_timer_in_queue(timer);
     spinlock_irq_restore(&timer_lock, state);
-
-    printf("register timer: %p, period: 0x%llx, is periodic: %s\r\n",
-            timer, period, period?"yes":"no");
 }
 
 
@@ -95,11 +92,6 @@ static enum handler_return timer_tick(void *arg, time_t now)
 
     // FIXME : spinlock here?
     // as we are in interrupt handler, on one core platform is okay not spin lock
-    static uint64_t tick_cnt = 0;
-    if ((tick_cnt & 0xff) == 0) {
-        printf("tick_cnt 0x%llx\r\n", tick_cnt);
-    }
-    tick_cnt++;
 
     struct list_node *node;
     for (; ;) {
@@ -123,9 +115,8 @@ static enum handler_return timer_tick(void *arg, time_t now)
         // insert periodic timer into timer queue again
         if (periodic) {
             if (!list_in_list(&timer->node) && (timer->periodic_time > 0)) {
-                printf("reinsett timer %p in to timer queue\r\n", timer);
                 timer->sched_time = now + timer->periodic_time;
-                insert_timer_in_queue(&timer);
+                insert_timer_in_queue(timer);
             }
         }
     }
