@@ -3,9 +3,9 @@
 #include <printf.h>
 #include <console.h>
 
-int vfprintf(const char *fmt, va_list ap)
+int _vfprintf(const char *fmt, va_list ap)
 {
-    _printf_driver(console_put_str, fmt, ap);
+    return _printf_driver(console_put_str, fmt, ap);
 }
 
 int _printf(const char *fmt, ...)
@@ -14,8 +14,9 @@ int _printf(const char *fmt, ...)
     int err;
 
     va_start(ap, fmt);
-    err = vfprintf(fmt, ap);
+    err = _vfprintf(fmt, ap);
     va_end(ap);
 
     return err;
 }
+

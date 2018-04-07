@@ -24,16 +24,16 @@
 #define __DESTRUCTOR    __attribute__((destructor))
 #define __OPTIMIZE(x)   __attribute__((optimize(x)))
 
-#else 
-#define likely(x)           (x)      
+#else
+#define likely(x)           (x)
 #define unlikely(x)         (x)
-#define __UNUSED       
-#define __PACKED       
-#define __ALIGNE(x)    
-#define __SECTION(x)   
-#define __PURE         
-#define __CONST        
-#define __NO_RETURN    
+#define __UNUSED
+#define __PACKED
+#define __ALIGNE(x)
+#define __SECTION(x)
+#define __PURE
+#define __CONST
+#define __NO_RETURN
 
 #endif // __GUNC__
 

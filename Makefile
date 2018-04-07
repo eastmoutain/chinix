@@ -1,8 +1,8 @@
 #V=1
 ifeq ($(V),)
-	V =
+	V = @
 else
-	V := @
+	V := 1
 endif
 
 PROJNAME := chinix
@@ -28,10 +28,10 @@ BOOT_SRC := boot/start.S \
             boot/gdt.S \
             boot/idt.S \
 
-ARCH_SRC := arch/x64_context_switch.S \
-            arch/arch.c \
-            arch/mmu.c \
-            arch/exception.c \
+ARCH_SRC := arch/x64/x64_context_switch.S \
+            arch/x64/arch.c \
+            arch/x64/mmu.c \
+            arch/x64/exception.c \
 
 DRIVER_SRC := driver/console/console.c \
               driver/interrupt/interrupt.c \
@@ -60,7 +60,6 @@ SRCS := $(KERNEL_SRCS)
 
 OBJS = $(patsubst %.c, %.o, $(SRCS:.S=.o))
 DEPS = $(OBJS:.o=.d)
-#$(info obj is $(OBJS))
 
 ELF := $(BOOTDIR)/$(PROJNAME).elf
 ISO := $(BOOTDIR)/$(PROJNAME).iso
@@ -92,5 +91,6 @@ clean:
 	$(V) rm $(OBJS) $(DEPS) $(ELF) $(ISO)
 
 launch_qemu: $(ISO)
-	$(V) qemu-system-x86_64 -cdrom $(ISO) -enable-kvm
+	#$(V) qemu-system-x86_64 -cdrom $(ISO) -enable-kvm
+	$(V) qemu-system-x86_64 -cdrom $(ISO)
 

@@ -5,6 +5,6 @@
 
 #define printf(x...) _printf(x)
 
-int vfprintf(const char *fmt, va_list ap);
+int _vfprintf(const char *fmt, va_list ap);
 
 #endif // STDIO_H

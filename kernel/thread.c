@@ -494,8 +494,6 @@ void thread_init_early(void)
 {
     int i;
 
-    printf("thread init early\r\n");
-
     for (i = 0; i < NUM_PRIORITY; i++) {
         list_initialize(&run_queue[i]);
     }

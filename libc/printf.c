@@ -1,5 +1,6 @@
 #include <sys/types.h>
 #include <stdarg.h>
+#include <string.h>
 #include <printf.h>
 
 #define LONGFLAG       0x00000001
@@ -16,9 +17,6 @@
 #define LEFTFORMATFLAG 0x00000800
 #define LEADZEROFLAG   0x00001000
 #define BLANKPOSFLAG   0x00002000
-
-static unsigned char *buf_cur_pos;
-static unsigned int buf_char_cnt;
 
 static char *longlong_to_string(char *buf, unsigned long long n, size_t len, unsigned int flag, char *signchar)
 {

@@ -31,7 +31,7 @@ typedef enum handler_return (*int_handler)(void *arg);
 
 void register_int_handler(uint32_t vector, int_handler handler, void *arg);
 
-void platfomr_init_interrupts(void);
+void platform_init_interrupts(void);
 
 enum handler_return platform_irq(x64_iframe_t *frame);
 

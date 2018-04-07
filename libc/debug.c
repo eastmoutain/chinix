@@ -1,4 +1,5 @@
 #include <debug.h>
+#include <string.h>
 #include <stdio.h>
 #include <arch/x86.h>
 
@@ -14,7 +15,7 @@ void platform_panic(const char *fmt, ...)
 {
     va_list(ap);
     va_start(ap, fmt);
-    vfprintf(fmt, ap);
+    _vfprintf(fmt, ap);
     va_end(ap);
 
     platform_halt();

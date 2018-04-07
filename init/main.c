@@ -1,14 +1,12 @@
 #include <console.h>
 #include <stdio.h>
 #include <assert.h>
+#include <errno.h>
 #include <platform_timer.h>
 #include <arch/interrupt.h>
 #include <arch/x86.h>
 #include <kernel/thread.h>
 #include <kernel/timer.h>
-
-
-timer_t test_timer;
 
 #define INIT_THREAD_STACK_SIZE  (4096)
 #define APP_THREAD_STACK_SIZE  (4096)
@@ -27,6 +25,8 @@ static int app_run(void *arg)
         printf("app thread %d running 0x%x \r\n", (int)arg, cnt[(int)arg]++);
         thread_sleep(1000);
     }
+
+    return NO_ERR;
 }
 
 
@@ -37,14 +37,8 @@ static int init_run(void *arg)
         thread_detach(app);
         thread_resume(app);
     }
-}
 
-static enum handler_return test_timer_run(timer_t *timer, time_t now, void *arg)
-{
-    static uint64_t tick = 0;
-    printf("test timer tick %d, now 0x%llx\r\n", tick++, now);
-
-    return INT_NO_RESCHEDULE;
+    return NO_ERR;
 }
 
 int start_kernel()
