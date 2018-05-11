@@ -15,7 +15,8 @@ export ROOTDIR
 SCRIPTSDIR = $(ROOTDIR)/scripts
 export SCRIPTSDIR
 
-BOOTDIR = $(ROOTDIR)/boot
+KCONFIGDIR = $(ROOTDIR)/kconfig
+KCONFIGFILE = $(ROOTDIR)/Kconfig
 
 # include  tool chain
 include $(SCRIPTSDIR)/toolchain.mk
@@ -55,6 +56,7 @@ ISO=$(ROOTDIR)/$(PROJNAME).iso
 
 all: $(ELF) $(ISO)
 
+
 lib: $(LIBDIR)
 	$(Q) $(foreach dir, $(LIBDIR), \
 		$(MAKE) -C $(dir) obj;\
@@ -71,11 +73,26 @@ $(ISO):$(ELF)
 	$(Q) rm -rf isofile
 
 
-.PHONY: clean launch_qemu
+.PHONY: menuconfig distclean silentoldconfig clean launch_qemu
+
+menuconfig: $(KCONFIGDIR)/mconf $(KCONFIGDIR)/conf
+	$(Q) $< -s $(KCONFIGFILE)
+	$(Q) $(MAKE) silentoldconfig
+
+$(KCONFIGDIR)/mconf:
+	$(Q) $(MAKE) -C $(KCONFIGDIR)
+
+silentoldconfig: $(KCONFIGDIR)/conf
+	$(Q) mkdir -p include/generated include/config
+	$(Q) $< -s --silentoldconfig $(KCONFIGFILE)
 
 clean:
 	$(Q) $(foreach dir, $(BOOTDIR) $(LIBDIR), $(MAKE) -C $(dir) clean;)
-	$(Q) rm -f $(ELF) $(ISO)
+	$(Q) -rm -f $(ELF) $(ISO)
+
+distclean: clean
+	$(Q) $(MAKE) -C $(KCONFIGDIR) clean
+	$(Q) rm -rf include/generated include/config
 
 launch_qemu: $(ISO)
 	#$(Q) $(QEMU) -cdrom $(ISO) -enable-kvm
