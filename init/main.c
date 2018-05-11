@@ -1,4 +1,5 @@
 #include <console.h>
+#include <uart.h>
 #include <stdio.h>
 #include <assert.h>
 #include <errno.h>
@@ -45,7 +46,9 @@ int start_kernel()
 {
     console_init();
 
-    printf("*** welcom chinix ***\r\n");
+    platform_init_uart();
+
+    printf("\n*** welcom chinix ***\r\n\n");
 
     thread_init_early();
 

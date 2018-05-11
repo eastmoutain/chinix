@@ -1,4 +1,5 @@
 #include <console.h>
+#include <uart.h>
 #include <arch/kernel_cfg.h>
 #include <arch/ioport.h>
 #include <arch/x86.h>
@@ -180,6 +181,7 @@ int console_put_str(const char *str, size_t len)
             console_putc('\r');
 
         console_putc(str[i]);
+        uart_putc(str[i]);
     }
 
     return len;

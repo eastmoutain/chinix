@@ -99,6 +99,10 @@ void thread_become_idle(void);
 
 void thread_preempt(void);
 
+void thread_preempt_enable(void);
+void thread_preempt_disable(void);
+bool thread_preempt_is_enabled(void);
+
 extern spinlock_t thread_lock;
 
 #define THREAD_LOCK(state) spinlock_irq_save(&thread_lock, state)

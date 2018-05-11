@@ -20,7 +20,38 @@ static thread_t _idle_thread;
 
 static thread_t *_current_thread = NULL;
 
+static unsigned int thread_preempt_lock;
+
 extern void x64_thread_context_switch(vaddr_t *sp1, vaddr_t *sp2);
+
+
+void thread_preempt_enable(void)
+{
+    spinlock_saved_state_t state;
+
+    THREAD_LOCK(state);
+
+    if (thread_preempt_lock > 0)
+        thread_preempt_lock--;
+
+    THREAD_UNLOCK(state);
+}
+
+void thread_preempt_disable(void)
+{
+    spinlock_saved_state_t state;
+
+    THREAD_LOCK(state);
+
+    thread_preempt_lock++;
+
+    THREAD_UNLOCK(state);
+}
+
+bool thread_preempt_is_enabled(void)
+{
+    return (bool)thread_preempt_lock == 0;
+}
 
 static inline thread_t* idle_thread()
 {
@@ -66,8 +97,6 @@ static void initial_thread_func(void)
     thread_t *thread = get_current_thread();
 
     debug_assert(thread->entry != NULL);
-
-    printf("cur thread %s\r\n", thread->name);
 
     int ret = thread->entry(thread->arg);
 
@@ -246,8 +275,8 @@ thread_t* thread_create(thread_t *thread, const char *name, thread_start_routine
     list_add_tail(&thread_list, &thread->thread_list_node);
     THREAD_UNLOCK(state);
 
-    printf("created thread %s, prio 0x%x, stack %p\r\n"
-            "stack_size 0x%lx, routine %p, sp 0x%lx\n\r",
+    printf("Created thread %s, prio 0x%x, stack %p\r\n"
+           "stack_size 0x%lx, routine %p, sp 0x%lx\n\r",
             thread->name, thread->priority, thread->stack, thread->stack_size,
             thread->entry, thread->sp);
     return thread;
@@ -267,7 +296,7 @@ void thread_yield(void)
 
 
     if (!thread_is_idle(old)) {
-        printf("thread_yield, cur thread %s, flags 0x%x\r\n", old->name, old->flags);
+        //printf("thread_yield, cur thread %s, flags 0x%x\r\n", old->name, old->flags);
         insert_in_run_queue_tail(old);
     }
 
@@ -461,7 +490,7 @@ enum handler_return thread_timer_tick(void)
 
     thread->remaining_quantum--;
     //printf("thread %s quantum 0x%x\r\n", thread->name, thread->remaining_quantum);
-    if (thread->remaining_quantum <= 0) {
+    if (thread->remaining_quantum <= 0 && thread_preempt_is_enabled()) {
         //printf("thread %s will be shecduled out\r\n", thread->name);
         return INT_RESCHEDULE;
     } else {
@@ -531,7 +560,7 @@ void thread_become_idle(void)
     arch_enable_ints();
     thread_yield();
 
-    printf("main rouine becomes idle thread\r\n");
+    printf("main rotine becomes idle thread\r\n");
     idle_thread_routine();
 }
 

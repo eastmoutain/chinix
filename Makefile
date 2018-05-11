@@ -64,11 +64,11 @@ $(ELF): lib
 	$(Q) $(MAKE) -C $(BOOTDIR) binary elf=$@ linker_file=$(LINKER_LD)
 
 $(ISO):$(ELF)
-	$(V) mkdir -p isofile/boot/grub
-	$(V) cp $(GRUB_CFG) isofile/boot/grub
-	$(V) cp $(ELF) isofile/boot
-	$(V) grub-mkrescue -o $(ISO) isofile  2> /dev/null
-	$(V) rm -rf isofile
+	$(Q) mkdir -v -p isofile/boot/grub
+	$(Q) cp -v $(GRUB_CFG) isofile/boot/grub
+	$(Q) cp -v $(ELF) isofile/boot
+	$(Q) grub-mkrescue -o $(ISO) isofile  2> /dev/null
+	$(Q) rm -rf isofile
 
 
 .PHONY: clean launch_qemu
@@ -78,6 +78,6 @@ clean:
 	$(Q) rm -f $(ELF) $(ISO)
 
 launch_qemu: $(ISO)
-	#$(V) $(QEMU) -cdrom $(ISO) -enable-kvm
-	$(V) $(QEMU) -cdrom $(ISO)
+	#$(Q) $(QEMU) -cdrom $(ISO) -enable-kvm
+	$(Q) $(QEMU) -cdrom $(ISO) -nographic #-enable-kvm
 
