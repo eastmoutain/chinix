@@ -1,70 +1,67 @@
-#V=1
+
+
 ifeq ($(V),)
-	V = @
+	Q = @
 else
-	V := 1
+	Q :=
 endif
+export Q
 
 PROJNAME := chinix
 
-include mk/toolchain.mk
+ROOTDIR = $(shell pwd)
+export ROOTDIR
 
-TOPDIR = $(shell pwd)
-BOOTDIR = $(TOPDIR)/boot
+SCRIPTSDIR = $(ROOTDIR)/scripts
+export SCRIPTSDIR
+
+BOOTDIR = $(ROOTDIR)/boot
+
+# include  tool chain
+include $(SCRIPTSDIR)/toolchain.mk
+
+CFLAGS +=
+
+ARFLAGS +=
+
+LDFLAGS +=
 
 
-LINKER_LD := $(TOPDIR)/boot/linker.ld
-GRUB_CFG := $(TOPDIR)/tools/grub.cfg
+LINKER_LD := $(ROOTDIR)/boot/linker.ld
+GRUB_CFG := $(ROOTDIR)/tools/grub.cfg
 
-CFLAGS := -Wall -Wextra -O2 -g -finline -fno-common -fasynchronous-unwind-tables \
-          -gdwarf-2 -fno-pic -fno-stack-protector -mcmodel=kernel \
-		  -mno-red-zone -MT -MP -MD -nostdlib \
+LIBDIR := arch \
+		  driver \
+		  init \
+		  kernel \
+		  libc
 
-CFLAGS += -I./include/ -I./include/driver/ -I./libc/include/
+BOOTDIR := boot
 
-LDFLAGS := -z max-page-size=4096
+LIBS = $(addprefix $(ROOTDIR)/,$(foreach dir, $(LIBDIR), $(dir)/lib$(dir).a))
+export LIBS
 
-BOOT_SRC := boot/start.S \
-            boot/gdt.S \
-            boot/idt.S \
+LDDIR += $(addprefix -L$(ROOTDIR)/,$(LIBDIR))
+LDLIB += $(addprefix -l,$(LIBDIR))
+export LDDIR
+export LDLIB
 
-ARCH_SRC := arch/x64/x64_context_switch.S \
-            arch/x64/arch.c \
-            arch/x64/mmu.c \
-            arch/x64/exception.c \
+export CFLAGS
+export ARFLAGS
+export LDFLAGS
 
-DRIVER_SRC := driver/console/console.c \
-              driver/interrupt/interrupt.c \
-              driver/timer/platform_timer.c \
-              driver/uart/uart.c \
-
-KERNEL_SRC := kernel/thread.c \
-	          kernel/timer.c \
-			  kernel/wait_queue.c \
-
-INIT_SRC := init/main.c \
-
-LIBC_SRC := libc/stdio.c \
-	        libc/string.c \
-	        libc/printf.c \
-			libc/debug.c \
-
-KERNEL_SRCS := $(BOOT_SRC) \
-	           $(ARCH_SRC) \
-			   $(DRIVER_SRC) \
-			   $(KERNEL_SRC) \
-			   $(INIT_SRC) \
-			   $(LIBC_SRC)
-
-SRCS := $(KERNEL_SRCS)
-
-OBJS = $(patsubst %.c, %.o, $(SRCS:.S=.o))
-DEPS = $(OBJS:.o=.d)
-
-ELF := $(BOOTDIR)/$(PROJNAME).elf
-ISO := $(BOOTDIR)/$(PROJNAME).iso
+ELF=$(ROOTDIR)/$(PROJNAME).elf
+ISO=$(ROOTDIR)/$(PROJNAME).iso
 
 all: $(ELF) $(ISO)
+
+lib: $(LIBDIR)
+	$(Q) $(foreach dir, $(LIBDIR), \
+		$(MAKE) -C $(dir) obj;\
+		$(MAKE) -C $(dir) lib libname=lib$(dir).a;)
+
+$(ELF): lib
+	$(Q) $(MAKE) -C $(BOOTDIR) binary elf=$@ linker_file=$(LINKER_LD)
 
 $(ISO):$(ELF)
 	$(V) mkdir -p isofile/boot/grub
@@ -73,24 +70,14 @@ $(ISO):$(ELF)
 	$(V) grub-mkrescue -o $(ISO) isofile  2> /dev/null
 	$(V) rm -rf isofile
 
-$(ELF):$(OBJS)
-	$(V) echo "ld $@"
-	$(V) $(LD) -n $(LDFLAGS) -dT $(LINKER_LD) $^ -o $@
-
-%.o:%.S
-	$(V) echo "cc -c $< -o $@"
-	$(V) $(CC) $(CFLAGS) -c $< -o $@
-
-%.o:%.c
-	$(V) echo "cc -c $< -o $@"
-	$(V) $(CC) $(CFLAGS) -c $< -o $@
 
 .PHONY: clean launch_qemu
 
 clean:
-	$(V) rm $(OBJS) $(DEPS) $(ELF) $(ISO)
+	$(Q) $(foreach dir, $(BOOTDIR) $(LIBDIR), $(MAKE) -C $(dir) clean;)
+	$(Q) rm -f $(ELF) $(ISO)
 
 launch_qemu: $(ISO)
-	#$(V) qemu-system-x86_64 -cdrom $(ISO) -enable-kvm
-	$(V) qemu-system-x86_64 -cdrom $(ISO)
+	#$(V) $(QEMU) -cdrom $(ISO) -enable-kvm
+	$(V) $(QEMU) -cdrom $(ISO)
 
