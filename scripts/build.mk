@@ -27,9 +27,9 @@ lib:
 	$(Q) echo "AR $(libname) $(LIB_OBJS)"
 	$(Q) $(AR) $(ARFLAGS) $(libname) $(LIB_OBJS)
 
-binary: $(SUBMODULE) $(COBJ) $(ASMOBJ)
+binary: obj $(LIB_OBJS)
 	$(Q) echo "Linking $(elf)..."
-	$(Q) $(LD) -n -d -T $(linker_file) $(LDFLAGS) $(LDDIR) -o $(elf) $(COBJ) $(ASMOBJ) --start-group $(LDLIB) --end-group
+	$(Q) $(LD) -n -d -T $(linker_file) $(LDFLAGS) $(LDDIR) -o $(elf) $(LIB_OBJS) --start-group $(LDLIB) --end-group
 
 clean:
 	$(Q) $(foreach dir,$(MODULE),$(MAKE) -C ./$(dir) clean;)
