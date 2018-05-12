@@ -27,6 +27,7 @@ typedef int (*thread_start_routine)(void *arg);
 
 typedef struct thread {
     struct list_node thread_list_node;
+    int thread_id;
 
     struct list_node queue_node;
 
@@ -73,12 +74,11 @@ void thread_become_idle(void);
 void thread_set_name(const char *name);
 void thread_set_priority(int priority);
 
-thread_t* thread_create(thread_t *thread, const char *name, thread_start_routine entry, void *arg, int priority, void *stack, size_t stack_size);
-
-int thread_resume(thread_t *thread);
-int thread_detach(thread_t *thread);
-int thread_join(thread_t *thread, int *retcode, time_t timeout);
-int thread_detach_and_resume(thread_t *thread);
+int thread_create(const char *name, thread_start_routine entry, void *arg, int priority, void *stack, size_t stack_size); 
+int thread_resume(int thid);
+int thread_detach(int thid);
+int thread_join(int thid, int *retcode, time_t timeout);
+int thread_detach_and_resume(int thid);
 
 void insert_in_run_queue_head(thread_t *thread);
 void insert_in_run_queue_tail(thread_t *thread);
@@ -87,7 +87,7 @@ void thread_exit(int retcode);
 void thread_sleep(time_t delay);
 
 void thread_block(void);
-void thread_unblock(thread_t *thread, bool resched);
+void thread_unblock(int thid, bool resched);
 
 enum handler_return thread_timer_tick(void);
 

@@ -21,7 +21,7 @@ KCONFIGFILE = $(ROOTDIR)/Kconfig
 # include  tool chain
 include $(SCRIPTSDIR)/toolchain.mk
 
-CFLAGS +=
+CFLAGS += -include $(ROOTDIR)/include/generated/autoconf.h
 
 ARFLAGS +=
 
@@ -92,7 +92,7 @@ clean:
 
 distclean: clean
 	$(Q) $(MAKE) -C $(KCONFIGDIR) clean
-	$(Q) rm -rf include/generated include/config
+	$(Q) rm -rf include/generated include/config .config
 
 launch_qemu: $(ISO)
 	#$(Q) $(QEMU) -cdrom $(ISO) -enable-kvm

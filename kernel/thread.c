@@ -8,15 +8,26 @@
 #include <errno.h>
 #include <string.h>
 
+#ifdef CONFIG_MAX_THREADS
+#define MAX_THREADS_NUM CONFIG_MAX_THREADS
+#else
+#define MAX_THREADS_NUM (10)
+#endif
+
+static thread_t g_threads[MAX_THREADS_NUM];
+
 spinlock_t thread_lock = SPINLOCK_INITIAL_VALUE;
 
+static struct list_node g_thread_free_list;
 static struct list_node thread_list;
+
 
 static struct list_node run_queue[NUM_PRIORITY];
 
 static uint32_t run_queue_bitmap;
 
-static thread_t _idle_thread;
+#define IDLE_THREAD_ID (0)
+#define MAX_THREAD_ID (MAX_THREADS_NUM - 1)
 
 static thread_t *_current_thread = NULL;
 
@@ -24,6 +35,19 @@ static unsigned int thread_preempt_lock;
 
 extern void x64_thread_context_switch(vaddr_t *sp1, vaddr_t *sp2);
 
+static inline thread_t* thread_id_to_ptr(int thid)
+{
+    debug_assert(thid > IDLE_THREAD_ID && thid < MAX_THREAD_ID);
+    return &g_threads[thid];
+}
+
+static inline int thread_ptr_to_id(thread_t *ptr)
+{
+    debug_assert((unsigned long)ptr >= (unsigned long)&g_threads[0]
+                 && (unsigned long)ptr < (unsigned long)&g_threads[MAX_THREAD_ID]);
+
+    return ((unsigned long)ptr - (unsigned long)&g_threads[0])/sizeof(thread_t);
+}
 
 void thread_preempt_enable(void)
 {
@@ -53,9 +77,37 @@ bool thread_preempt_is_enabled(void)
     return (bool)thread_preempt_lock == 0;
 }
 
+static inline thread_t* get_free_thread_node(void)
+{
+    spinlock_saved_state_t state;
+
+    if (list_is_empty(&g_thread_free_list))
+        return NULL;
+
+    thread_t *thread = NULL;
+
+    THREAD_LOCK(state);
+
+    struct list_node *node = list_remove_head(&g_thread_free_list);
+    thread = container_of(node, thread_t, thread_list_node);
+    
+    THREAD_UNLOCK(state);
+
+    return thread;
+}
+
+static inline void free_thread_node(thread_t *thread)
+{
+    spinlock_saved_state_t state;
+
+    THREAD_LOCK(state);
+    list_add_tail(&g_thread_free_list, &thread->thread_list_node);
+    THREAD_UNLOCK(state);
+
+}
 static inline thread_t* idle_thread()
 {
-    return &_idle_thread;
+    return &g_threads[IDLE_THREAD_ID];
 }
 
 void insert_in_run_queue_head(thread_t *thread)
@@ -249,9 +301,15 @@ void thread_set_priority(int priority)
 }
 
 
-thread_t* thread_create(thread_t *thread, const char *name, thread_start_routine entry, void *arg, int priority, void *stack, size_t stack_size)
+int thread_create(const char *name, thread_start_routine entry, void *arg, int priority, void *stack, size_t stack_size)
 {
     spinlock_saved_state_t state;
+
+    thread_t *thread = get_free_thread_node();
+    if (thread == NULL) {
+        printf("no free thread node left\r\n");
+        return -1;
+    }
 
     init_thread_strcut(thread, name);
 
@@ -279,7 +337,7 @@ thread_t* thread_create(thread_t *thread, const char *name, thread_start_routine
            "stack_size 0x%lx, routine %p, sp 0x%lx\n\r",
             thread->name, thread->priority, thread->stack, thread->stack_size,
             thread->entry, thread->sp);
-    return thread;
+    return thread_ptr_to_id(thread);
 }
 
 void thread_yield(void)
@@ -306,9 +364,12 @@ void thread_yield(void)
 }
 
 
-int thread_resume(thread_t *thread)
+int thread_resume(int thid)
 {
     spinlock_saved_state_t state;
+    thread_t *thread = NULL;
+    
+    thread = thread_id_to_ptr(thid);
 
     debug_assert(thread->state != THREAD_DEATH);
     bool resched = false;
@@ -330,9 +391,12 @@ int thread_resume(thread_t *thread)
 }
 
 
-int thread_join(thread_t *thread, int *retcode, time_t timeout)
+int thread_join(int thid, int *retcode, time_t timeout)
 {
     spinlock_saved_state_t state;
+    thread_t *thread = NULL;
+    
+    thread = thread_id_to_ptr(thid);
 
     THREAD_LOCK(state);
 
@@ -357,15 +421,19 @@ int thread_join(thread_t *thread, int *retcode, time_t timeout)
         *retcode = thread->retcode;
 
     list_delete(&thread->thread_list_node);
+    free_thread_node(thread);
 
     THREAD_UNLOCK(state);
 
     return NO_ERR;
 }
 
-int thread_detach(thread_t *thread)
+int thread_detach(int thid)
 {
     spinlock_saved_state_t state;
+    thread_t *thread = NULL;
+    
+    thread = thread_id_to_ptr(thid);
     THREAD_LOCK(state);
 
     wait_queue_wake_all(&thread->exit_wait_queue, false, ERR_THREAD_DETACHED);
@@ -382,9 +450,12 @@ int thread_detach(thread_t *thread)
     return NO_ERR;
 }
 
-int thread_detach_and_resume(thread_t *thread)
+int thread_detach_and_resume(int thid)
 {
     int err;
+    thread_t *thread = NULL;
+    
+    thread = thread_id_to_ptr(thid);
 
     err = thread_detach(thread);
     if (err < 0)
@@ -410,6 +481,7 @@ void thread_exit(int retcode)
 
     if (thread->flags & THREAD_FLAG_DETACHED) {
         list_delete(&thread->thread_list_node);
+        free_thread_node(thread);
     } else {
         wait_queue_wake_all(&thread->exit_wait_queue, false, 0);
     }
@@ -470,8 +542,11 @@ void thread_block(void)
     thread_resched();
 }
 
-void thread_unblock(thread_t *thread, bool resched)
+void thread_unblock(int thid, bool resched)
 {
+    thread_t *thread = NULL;
+    
+    thread = thread_id_to_ptr(thid);
     debug_assert(thread->state == THREAD_BLOCKED);
     debug_assert(spinlock_held(&thread_lock));
     debug_assert(!thread_is_idle(thread));
@@ -530,16 +605,24 @@ void thread_init_early(void)
     run_queue_bitmap = 0;
 
     list_initialize(&thread_list);
+    list_initialize(&g_thread_free_list);
 
-    thread_t *thread = idle_thread();
-    init_thread_strcut(thread, "boot thread");
+    memset(g_threads, 0, sizeof(g_threads));
+    for (i = IDLE_THREAD_ID + 1; i < MAX_THREAD_ID; i++) {
+        g_threads[i].thread_id = i;
+        list_add_tail(&g_thread_free_list, &g_threads[i].thread_list_node);
+    }
+    g_threads[0].thread_id = 0;
+    
+    thread_t *idle = idle_thread();
+    init_thread_strcut(idle, "boot thread");
 
-    thread->priority = HIGHEST_PRIORITY;
-    thread->state = THREAD_RUNNING;
-    thread->flags = THREAD_FLAG_DETACHED;
-    wait_queue_init(&thread->exit_wait_queue);
-    list_add_head(&thread_list, &thread->thread_list_node);
-    set_current_thread(thread);
+    idle->priority = HIGHEST_PRIORITY;
+    idle->state = THREAD_RUNNING;
+    idle->flags = THREAD_FLAG_DETACHED;
+    wait_queue_init(&idle->exit_wait_queue);
+    list_add_head(&thread_list, &idle->thread_list_node);
+    set_current_thread(idle);
 }
 
 static void idle_thread_routine(void)

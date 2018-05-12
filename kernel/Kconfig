@@ -1,0 +1,20 @@
+
+
+config VERSION
+	string "Chinix version"
+    default "0.1"
+	---help---
+		Show Chinix version
+
+config MAX_THREADS
+    int "Max threads supported by Chinix" 
+    default 10
+    ---help---
+        The max number of threads supported by Chinix
+
+config DEFAULT_THREAD_STACK_SIZE
+    hex "default thread stack size"
+    default 0x1000
+    ---help---
+        default thread stack size
+

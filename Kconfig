@@ -1,59 +1,30 @@
-#menu "Kylin performance test"
 
-config KYLINPERFORMANCE
-	tristate "Kylin performance test"
-	default y
-	---help---
-		Kylin performance test.
+mainmenu "Chinix Configuration"
 
-if KYLINPERFORMANCE
-config UDISK
-	tristate "U disk test"
-	default n
-	help
-		The U disk cp test.
+menu "Build Setup"
 
-config UNIXBENCH
-	tristate "Unixbench test"
-	default n
-	help
-		The unixbench test.
+choice
+    prompt "Build platform"
+    default LINUX_HOST
 
-config STREAM
-	tristate "Stream test"
-	default n
-	help
-		The stream test.
+config LINUX_HOST
+    bool "Linux"
 
-config IOZONE
-	tristate "Iozone test"
-	default n
-	help
-		The iozone test.
+endchoice
 
-config LMBENCH
-	tristate "Lmbench test"
-	default n
-	help
-		The lmbench test.
+endmenu # Build Setup
 
-config IPERF
-	tristate "Iperf test"
-	default n
-	help
-		The iperf test.
 
-config SPECJVM
-	tristate "Specjvm test"
-	default n
-	help
-		The specjvm test.
 
-config TTYTEST
-	tristate "TTY test"
-	default n
-	help
-		The tty test
-endif
-#endmenu
+menu "Kernel Configuartion"
+source "kernel/Kconfig"
+endmenu # Kernel Configuration
 
+menu "Debug Options"
+config DEBUG_ASSERT
+    bool "debug assert"
+    default n
+    ---help---
+        Enable or disable debug assertion
+
+endmenu # Debug Options
